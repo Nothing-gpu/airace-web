@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>airace — Your AI race engineer</title>
+<meta name="description" content="airace listens to your live F1 telemetry over UDP, runs it through an LLM pipeline, and speaks engineer-style radio calls back to you in real time. Free, open source, bring your own key." />
+
+<!-- Favicon: racing helmet mark -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='256' fill='%23000000'/%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-width='20' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M146,410 L420,410 C452,410 458,380 452,345 C448,300 446,240 419,205 C400,150 320,96 228,98 C150,100 78,160 70,235 C64,300 90,410 146,410 Z'/%3E%3Cpath d='M419,205 C360,200 250,200 224,250 C214,275 240,300 300,305 L452,345'/%3E%3C/g%3E%3C/svg%3E" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700&family=Chivo+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+:root{
+  --black:#000000;
+  --white:#FFFFFF;
+  --soft:#E8E8E8;
+  --muted:#8A8A8A;
+  --dim:#4a4a4a;
+  --line:#FFFFFF;
+  --red:#FF2D1A;
+  --red-deep:#C21D0E;
+  --rule:1.5px;
+  --track:0.15em;
+  --maxw:1200px;
+  --disp:"Instrument Sans", system-ui, sans-serif;
+  --mono:"Chivo Mono", ui-monospace, monospace;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--black);
+  color:var(--soft);
+  font-family:"Instrument Sans", system-ui, -apple-system, sans-serif;
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* ---------- background texture layers ---------- */
+.bg-fx{position:fixed;inset:0;pointer-events:none;z-index:0;}
+/* scanlines */
+.bg-fx.scanlines{
+  background-image:repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.025) 0px,
+    rgba(255,255,255,0.025) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  opacity:.55;
+}
+/* film grain */
+.bg-fx.grain{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity:.05;
+  mix-blend-mode:screen;
+}
+/* ghosted racing trace lines */
+.bg-fx.traces{overflow:hidden;}
+.bg-fx.traces svg{position:absolute;width:200%;height:100%;left:-50%;top:0;opacity:.10;}
+.trace-path{
+  fill:none;stroke:var(--white);stroke-width:1;
+  stroke-dasharray:6 10;
+  animation:drift 40s linear infinite;
+}
+.trace-path.red{stroke:var(--red);opacity:.5;animation-duration:55s;}
+@keyframes drift{to{stroke-dashoffset:-320;}}
+
+.wrap{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+
+/* ---------- shared type ---------- */
+.tag{
+  font-family:var(--mono);
+  text-transform:uppercase;
+  letter-spacing:var(--track);
+  font-size:11px;
+  color:var(--muted);
+  font-weight:500;
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  text-transform:uppercase;letter-spacing:0.16em;
+  font-size:11px;font-weight:600;color:var(--muted);
+  font-family:var(--mono);
+}
+h1,h2,h3{font-weight:700;line-height:1.05;letter-spacing:-0.01em;color:var(--white);}
+h2{font-size:clamp(28px,4vw,44px);}
+h3{font-size:20px;letter-spacing:0;}
+
+.mono{font-family:var(--mono);}
+.red{color:var(--red);}
+.livedot{
+  width:9px;height:9px;border-radius:50%;background:var(--red);
+  box-shadow:0 0 0 0 rgba(255,45,26,.6);
+  animation:pulse 1.6s ease-out infinite;display:inline-block;
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(255,45,26,.55)}
+  70%{box-shadow:0 0 0 8px rgba(255,45,26,0)}
+  100%{box-shadow:0 0 0 0 rgba(255,45,26,0)}
+}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  border:var(--rule) solid var(--white);
+  border-radius:999px;
+  padding:12px 22px;
+  font-size:13px;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.12em;
+  color:var(--white);text-decoration:none;
+  background:transparent;
+  transition:all .18s ease;
+  font-family:var(--mono);
+  cursor:pointer;white-space:nowrap;
+}
+.btn:hover{background:var(--white);color:var(--black);}
+.btn.solid{background:var(--white);color:var(--black);}
+.btn.solid:hover{background:transparent;color:var(--white);}
+.btn svg{width:16px;height:16px;}
+.btn.small{padding:8px 16px;font-size:11px;}
+/* coming soon — non-interactive, dimmed */
+.btn.soon{
+  border-color:var(--muted);color:var(--muted);
+  cursor:default;position:relative;padding-right:18px;
+}
+.btn.soon:hover{background:transparent;color:var(--muted);}
+.btn.soon .dot{width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;}
+.btn.soon .lbl-soon{
+  font-family:var(--mono);font-size:9px;letter-spacing:0.14em;
+  border:1px solid var(--muted);border-radius:999px;padding:2px 7px;margin-left:2px;
+}
+
+/* ---------- header ---------- */
+header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(0,0,0,0.72);
+  backdrop-filter:blur(10px);
+  border-bottom:var(--rule) solid var(--white);
+}
+.nav{
+  display:flex;align-items:center;justify-content:space-between;
+  height:66px;
+}
+.brand{display:flex;align-items:center;gap:13px;text-decoration:none;color:var(--white);}
+.brand .ring{
+  width:40px;height:40px;border-radius:50%;
+  border:var(--rule) solid var(--white);
+  display:flex;align-items:center;justify-content:center;
+  padding:3px;flex:none;
+}
+.brand .ring svg{width:100%;height:100%;}
+.brand .name{font-size:19px;font-weight:700;letter-spacing:0.02em;}
+.brand .name b{font-weight:700;}
+.nav-links{display:flex;align-items:center;gap:30px;}
+.nav-links a.navlink{
+  color:var(--soft);text-decoration:none;
+  font-size:11px;font-weight:600;text-transform:uppercase;
+  letter-spacing:0.14em;font-family:var(--mono);
+  transition:color .15s;
+}
+.nav-links a.navlink:hover{color:var(--white);}
+.nav-cta{display:flex;align-items:center;gap:10px;}
+@media(max-width:860px){
+  .nav-links .navlink{display:none;}
+}
+@media(max-width:520px){
+  .nav-cta .btn span{display:none;}
+  .nav-cta .btn{padding:9px 12px;}
+}
+
+/* ---------- hero ---------- */
+.hero{padding:64px 0 40px;border-bottom:var(--rule) solid var(--white);position:relative;}
+.hero-grid{display:grid;grid-template-columns:1.15fr 0.85fr;gap:48px;align-items:center;}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:36px;}}
+
+.hero h1{
+  font-size:clamp(40px,7vw,78px);
+  line-height:0.96;
+  letter-spacing:-0.02em;
+  margin:18px 0 22px;
+  text-transform:uppercase;
+}
+.hero .lead{font-size:clamp(16px,2vw,19px);color:var(--soft);max-width:44ch;margin-bottom:14px;}
+.hero .sub{font-size:15px;color:var(--muted);max-width:46ch;margin-bottom:30px;}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:26px;}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px 22px;}
+.chip{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:11px;letter-spacing:0.06em;
+  text-transform:uppercase;color:var(--muted);
+}
+.chip b{color:var(--white);font-weight:600;}
+
+/* radio panel (hero right) */
+.radio{
+  border:var(--rule) solid var(--white);
+  background:var(--black);
+  padding:0;
+}
+.radio-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;border-bottom:var(--rule) solid var(--white);
+}
+.radio-head .lbl{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--white);}
+.radio-head .t{font-family:var(--mono);font-size:11px;color:var(--muted);}
+.radio-body{padding:16px;display:flex;flex-direction:column;gap:14px;}
+.msg{display:flex;flex-direction:column;gap:4px;}
+.msg .who{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
+.msg .txt{font-size:14.5px;line-height:1.4;color:var(--soft);}
+.msg.eng .txt{color:var(--white);}
+.msg .txt .q{color:var(--white);font-weight:600;}
+.radio-foot{
+  border-top:var(--rule) solid var(--white);
+  padding:11px 16px;display:flex;align-items:center;justify-content:space-between;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);
+}
+.eq{display:flex;align-items:flex-end;gap:2px;height:12px;}
+.eq span{width:2px;background:var(--red);animation:eq 1s ease-in-out infinite;}
+.eq span:nth-child(1){height:40%;animation-delay:0s}
+.eq span:nth-child(2){height:90%;animation-delay:.15s}
+.eq span:nth-child(3){height:60%;animation-delay:.3s}
+.eq span:nth-child(4){height:100%;animation-delay:.1s}
+.eq span:nth-child(5){height:50%;animation-delay:.25s}
+@keyframes eq{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+
+/* ---------- section scaffolding ---------- */
+section{position:relative;}
+.sec{padding:76px 0;border-bottom:var(--rule) solid var(--white);}
+.sec-head{margin-bottom:44px;max-width:62ch;}
+.sec-head h2{margin:14px 0 12px;}
+.sec-head p{color:var(--muted);font-size:16px;}
+
+/* ---------- BYO key banner ---------- */
+.byok{padding:70px 0;border-bottom:var(--rule) solid var(--white);}
+.byok-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:var(--rule) solid var(--white);}
+@media(max-width:820px){.byok-grid{grid-template-columns:1fr;}}
+.byok-cell{padding:34px 32px;}
+.byok-cell + .byok-cell{border-left:var(--rule) solid var(--white);}
+@media(max-width:820px){.byok-cell + .byok-cell{border-left:none;border-top:var(--rule) solid var(--white);}}
+.byok h2{font-size:clamp(30px,4.5vw,50px);text-transform:uppercase;line-height:0.98;}
+.byok .big{font-size:clamp(30px,4.5vw,50px);}
+.byok p{color:var(--soft);margin-top:16px;max-width:40ch;}
+.byok .fine{color:var(--muted);font-size:14px;margin-top:14px;}
+.free-badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;}
+.pill-static{
+  border:var(--rule) solid var(--white);border-radius:999px;
+  padding:7px 15px;font-family:var(--mono);font-size:11px;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--white);
+}
+.pill-static.red{border-color:var(--red);color:var(--red);}
+.provider-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;}
+.prov{
+  border:var(--rule) solid var(--muted);border-radius:6px;
+  padding:9px 14px;font-family:var(--mono);font-size:12px;
+  color:var(--soft);letter-spacing:0.04em;display:flex;align-items:center;gap:8px;
+  transition:border-color .15s,color .15s;
+}
+.prov:hover{border-color:var(--white);color:var(--white);}
+.prov .d{font-size:9px;color:var(--muted);}
+
+/* ---------- feature grid ---------- */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:var(--rule) solid var(--white);}
+@media(max-width:900px){.features{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.features{grid-template-columns:1fr;}}
+.feat{
+  padding:26px 24px;
+  border-right:var(--rule) solid var(--white);
+  border-bottom:var(--rule) solid var(--white);
+  position:relative;
+  transition:background .18s;
+}
+.feat:hover{background:rgba(255,255,255,0.03);}
+/* remove trailing borders per row/col via nth handled with outer border */
+.features .feat:nth-child(3n){border-right:none;}
+@media(max-width:900px){
+  .features .feat:nth-child(3n){border-right:var(--rule) solid var(--white);}
+  .features .feat:nth-child(2n){border-right:none;}
+}
+@media(max-width:600px){
+  .features .feat{border-right:none!important;}
+}
+.feat .ico{font-size:22px;margin-bottom:14px;display:block;line-height:1;}
+.feat h3{font-size:16px;margin-bottom:8px;letter-spacing:0;color:var(--white);}
+.feat p{font-size:13.5px;color:var(--muted);line-height:1.5;}
+.feat .num{position:absolute;top:20px;right:22px;font-family:var(--mono);font-size:11px;color:var(--dim);}
+
+/* ---------- response time ---------- */
+.rt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+@media(max-width:820px){.rt-grid{grid-template-columns:1fr;}}
+.rt-card{border:var(--rule) solid var(--white);padding:28px 26px;position:relative;}
+.rt-card .num{font-family:var(--mono);font-size:clamp(34px,5vw,52px);font-weight:600;color:var(--white);line-height:1;letter-spacing:-0.02em;}
+.rt-card .num small{font-size:0.4em;color:var(--muted);letter-spacing:0.1em;}
+.rt-card h3{margin:16px 0 8px;font-size:16px;}
+.rt-card p{color:var(--muted);font-size:13.5px;}
+.rt-card .badge{
+  position:absolute;top:22px;right:24px;font-family:var(--mono);font-size:10px;
+  text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);
+  border:var(--rule) solid var(--muted);border-radius:999px;padding:4px 10px;
+}
+.rt-card.alert .num{color:var(--red);}
+.rt-card.alert .badge{color:var(--red);border-color:var(--red);}
+
+/* ---------- games ---------- */
+.games-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+@media(max-width:820px){.games-grid{grid-template-columns:1fr;}}
+.game-block{border:var(--rule) solid var(--white);padding:28px 26px;}
+.game-block .status{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:16px;}
+.ok{color:var(--white);}
+.warn{color:var(--muted);}
+.game-block h3{font-size:22px;margin-bottom:10px;}
+.game-block .list{display:flex;flex-direction:column;gap:9px;margin-top:14px;}
+.game-block .list .row{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--soft);}
+.game-block .list .row .k{color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:0.06em;min-width:20px;}
+.game-block.exp{border-color:var(--muted);}
+.game-block.exp h3,.game-block.exp .row{color:var(--muted);}
+.game-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+.gt{font-family:var(--mono);font-size:11px;padding:6px 12px;border:var(--rule) solid var(--muted);border-radius:999px;color:var(--muted);letter-spacing:0.06em;}
+.gt.on{border-color:var(--white);color:var(--white);}
+.udp-note{
+  margin-top:26px;border:var(--rule) solid var(--white);padding:18px 22px;
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:13px;color:var(--soft);
+}
+.udp-note .port{color:var(--red);font-weight:600;}
+
+/* ---------- languages ---------- */
+.langs{display:flex;flex-wrap:wrap;gap:12px;}
+.lang{
+  border:var(--rule) solid var(--white);border-radius:999px;
+  padding:10px 20px;font-size:14px;color:var(--white);
+  display:flex;align-items:center;gap:9px;transition:background .15s,color .15s;
+}
+.lang:hover{background:var(--white);color:var(--black);}
+.lang .code{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:0.1em;}
+.lang:hover .code{color:var(--black);}
+
+/* ---------- developer ---------- */
+.dev-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+@media(max-width:640px){.dev-grid{grid-template-columns:1fr;}}
+.dev-card{
+  display:flex;align-items:center;gap:20px;
+  border:var(--rule) solid var(--white);
+  padding:24px 26px;text-decoration:none;color:var(--white);
+  transition:background .18s,color .18s;
+}
+.dev-card:hover{background:var(--white);color:var(--black);}
+.dev-ico{
+  width:46px;height:46px;flex:none;
+  border:var(--rule) solid currentColor;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+.dev-ico svg{width:22px;height:22px;}
+.dev-meta{display:flex;flex-direction:column;gap:3px;flex:1;}
+.dev-k{font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);}
+.dev-card:hover .dev-k{color:var(--black);}
+.dev-v{font-size:19px;font-weight:700;letter-spacing:-0.01em;}
+.dev-arrow{font-size:20px;color:var(--muted);}
+.dev-card:hover .dev-arrow{color:var(--black);}
+
+/* ---------- how it works ---------- */
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:var(--rule) solid var(--white);}
+@media(max-width:820px){.flow{grid-template-columns:1fr 1fr;}}
+@media(max-width:480px){.flow{grid-template-columns:1fr;}}
+.step{padding:26px 22px;border-right:var(--rule) solid var(--white);position:relative;}
+.flow .step:last-child{border-right:none;}
+@media(max-width:820px){
+  .flow .step:nth-child(2n){border-right:none;}
+  .flow .step:nth-child(1),.flow .step:nth-child(2){border-bottom:var(--rule) solid var(--white);}
+}
+@media(max-width:480px){
+  .flow .step{border-right:none;border-bottom:var(--rule) solid var(--white);}
+  .flow .step:last-child{border-bottom:none;}
+}
+.step .n{font-family:var(--mono);font-size:12px;color:var(--red);letter-spacing:0.1em;margin-bottom:14px;display:block;}
+.step h3{font-size:15px;margin-bottom:8px;}
+.step p{font-size:13px;color:var(--muted);}
+
+/* ---------- final CTA ---------- */
+.final{padding:90px 0;border-bottom:var(--rule) solid var(--white);text-align:center;}
+.final h2{font-size:clamp(34px,6vw,64px);text-transform:uppercase;line-height:0.98;margin-bottom:18px;}
+.final p{color:var(--muted);max-width:46ch;margin:0 auto 30px;font-size:16px;}
+.final .hero-ctas{justify-content:center;}
+
+/* ---------- footer ---------- */
+footer{padding:52px 0 40px;}
+.foot-top{display:flex;justify-content:space-between;align-items:flex-start;gap:32px;flex-wrap:wrap;margin-bottom:40px;}
+.foot-brand{max-width:34ch;}
+.foot-brand .brand{margin-bottom:14px;}
+.foot-brand p{color:var(--muted);font-size:14px;}
+.foot-links{display:flex;gap:56px;flex-wrap:wrap;}
+.foot-col h4{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.14em;color:var(--muted);margin-bottom:14px;font-weight:600;}
+.foot-col a{display:block;color:var(--soft);text-decoration:none;font-size:14px;margin-bottom:9px;transition:color .15s;}
+.foot-col a:hover{color:var(--white);}
+.foot-bottom{border-top:var(--rule) solid var(--white);padding-top:22px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+.foot-bottom .tag{font-size:11px;}
+.vibecoded{font-size:11px;color:var(--dim);font-family:var(--mono);letter-spacing:0.04em;}
+
+.divider-lbl{
+  text-align:center;font-family:var(--mono);font-size:10px;
+  letter-spacing:0.3em;text-transform:uppercase;color:var(--dim);
+  padding:14px 0;
+}
+</style>
+</head>
+<body>
+
+<!-- background texture -->
+<div class="bg-fx traces" aria-hidden="true">
+  <svg viewBox="0 0 1600 900" preserveAspectRatio="none">
+    <path class="trace-path" d="M-100,720 C200,700 340,420 560,430 C760,440 820,690 1040,700 C1260,710 1360,300 1700,340" />
+    <path class="trace-path red" d="M-100,540 C260,560 380,240 620,250 C900,262 980,520 1240,500 C1440,485 1520,200 1700,220" />
+    <path class="trace-path" d="M-100,300 C240,320 420,120 700,140 C980,160 1080,360 1360,340 C1520,330 1600,160 1700,150" />
+  </svg>
+</div>
+<div class="bg-fx scanlines" aria-hidden="true"></div>
+<div class="bg-fx grain" aria-hidden="true"></div>
+
+<!-- ============ HEADER ============ -->
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <span class="ring">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="airace helmet">
+          <circle cx="256" cy="256" r="256" fill="#000000"/>
+          <g fill="none" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M146,410 L420,410 C452,410 458,380 452,345 C448,300 446,240 419,205 C400,150 320,96 228,98 C150,100 78,160 70,235 C64,300 90,410 146,410 Z"/>
+            <path d="M419,205 C360,200 250,200 224,250 C214,275 240,300 300,305 L452,345"/>
+          </g>
+        </svg>
+      </span>
+      <span class="name"><b>airace</b></span>
+    </a>
+
+    <nav class="nav-links">
+      <a class="navlink" href="#features">Features</a>
+      <a class="navlink" href="#speed">Speed</a>
+      <a class="navlink" href="#games">Games</a>
+      <a class="navlink" href="#free">Free</a>
+    </nav>
+
+    <div class="nav-cta">
+      <a class="btn small" href="https://www.youtube.com/@pmech-yt" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.3 3.6-6.3 3.6Z"/></svg>
+        <span>YouTube</span>
+      </a>
+      <a class="btn small solid" href="https://github.com/nothing-gpu" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.3-.5-1.5.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<a id="top"></a>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-left">
+      <span class="eyebrow"><span class="livedot"></span> AI RACE ENGINEER · OPEN SOURCE</span>
+      <h1>Bono<br/>in a box.</h1>
+      <p class="lead">airace listens to your live F1 telemetry over UDP, runs it through an LLM pipeline, and <b style="color:var(--white)">speaks engineer-style radio calls</b> back to you in real time.</p>
+      <p class="sub">Calm, terse, factual — modelled on real F1 race engineers. One snapshot in, one line out. Silent until it has something worth saying. And you can talk back.</p>
+
+      <div class="hero-ctas">
+        <a class="btn solid" href="https://github.com/nothing-gpu" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.3-.5-1.5.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg>
+          View on GitHub
+        </a>
+        <a class="btn" href="https://www.youtube.com/@pmech-yt" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.3 3.6-6.3 3.6Z"/></svg>
+          Watch on YouTube
+        </a>
+        <span class="btn soon" aria-disabled="true"><span class="dot"></span> Download app <span class="lbl-soon">Coming soon</span></span>
+      </div>
+
+      <div class="hero-meta">
+        <span class="chip"><span class="livedot"></span> <b>Free</b> &amp; open source</span>
+        <span class="chip">Verified for <b>F1&nbsp;25 / 26</b></span>
+        <span class="chip">Answers in <b>&lt; 3s</b></span>
+        <span class="chip"><b>9</b> languages</span>
+      </div>
+    </div>
+
+    <!-- radio panel -->
+    <div class="radio" aria-label="example radio exchange">
+      <div class="radio-head">
+        <span class="lbl"><span class="livedot"></span> Team Radio</span>
+        <span class="t mono">LAP 34 / 57</span>
+      </div>
+      <div class="radio-body">
+        <div class="msg drv">
+          <span class="who">Driver</span>
+          <span class="txt"><span class="q">“Gap to the car behind?”</span></span>
+        </div>
+        <div class="msg eng">
+          <span class="who">Engineer</span>
+          <span class="txt">One-point-two and stable. He's a tenth up in sector two, losing it on the straight. You're fine.</span>
+        </div>
+        <div class="msg drv">
+          <span class="who">Driver</span>
+          <span class="txt"><span class="q">“Should I box?”</span></span>
+        </div>
+        <div class="msg eng">
+          <span class="who">Engineer</span>
+          <span class="txt">Negative. Tyres have five good laps. Box this lap would drop you to P6. Stay out.</span>
+        </div>
+      </div>
+      <div class="radio-foot">
+        <span>UDP · 20777</span>
+        <span class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></span>
+        <span>TTS · PIPER</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FREE / BYOK ============ -->
+<section class="byok" id="free">
+  <div class="wrap">
+    <div class="sec-head" style="margin-bottom:28px;">
+      <span class="eyebrow">Pricing — the whole story</span>
+    </div>
+    <div class="byok-grid">
+      <div class="byok-cell">
+        <h2 class="big">Completely free.<br/>Zero subscription.</h2>
+        <p>There's no hosted service and nothing to pay us. airace is open source and runs entirely on your machine.</p>
+        <div class="free-badges" style="margin-top:22px;">
+          <span class="pill-static">$0 / month</span>
+          <span class="pill-static">No account</span>
+          <span class="pill-static">No hosted service</span>
+        </div>
+      </div>
+      <div class="byok-cell">
+        <h3 class="tag" style="color:var(--red);font-size:11px;">The catch</h3>
+        <h2 class="big" style="margin-top:10px;">Bring your own key.</h2>
+        <p>Plug in <b style="color:var(--white)">your own API auth</b>. It runs on whatever provider you already pay for — or fully local for zero cost. You pay your provider directly. Nothing flows through us.</p>
+        <p class="fine">Your keys, your models, your data.</p>
+        <div class="provider-row">
+          <span class="prov"><span class="d">▸</span> OpenRouter <span class="tag" style="font-size:9px;">default</span></span>
+          <span class="prov"><span class="d">▸</span> Groq</span>
+          <span class="prov"><span class="d">▸</span> Anthropic</span>
+          <span class="prov"><span class="d">▸</span> Ollama <span class="tag" style="font-size:9px;">local · no key</span></span>
+          <span class="prov"><span class="d">▸</span> Any OpenAI-compatible endpoint</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="sec" id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">The pipeline</span>
+      <h2>Telemetry in. Radio out.</h2>
+      <p>Four moving parts, one calm voice in your ear.</p>
+    </div>
+    <div class="flow">
+      <div class="step">
+        <span class="n">01</span>
+        <h3>Listen</h3>
+        <p>Your game streams telemetry over UDP on port 20777. airace catches every snapshot — speed, tyres, fuel, gaps, damage.</p>
+      </div>
+      <div class="step">
+        <span class="n">02</span>
+        <h3>Route</h3>
+        <p>Only the data that matters to the moment (or your question) gets sent on. Tyres query → just tyre data. Fewer tokens, faster answers.</p>
+      </div>
+      <div class="step">
+        <span class="n">03</span>
+        <h3>Reason</h3>
+        <p>A fast local model handles simple questions in seconds and only escalates the hard ones to your main model. Memory keeps it from repeating itself.</p>
+      </div>
+      <div class="step">
+        <span class="n">04</span>
+        <h3>Speak</h3>
+        <p>A Piper neural voice reads the call out loud, engineer-style. Silent until there's something worth saying.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESPONSE TIME ============ -->
+<section class="sec" id="speed">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Response time</span>
+      <h2>Ask a question, get an answer in seconds. Emergencies are instant.</h2>
+      <p>Your questions never wait on the slow model. Three lanes, each tuned for its job.</p>
+    </div>
+    <div class="rt-grid">
+      <div class="rt-card">
+        <span class="badge">Driver Q&amp;A</span>
+        <div class="num">&lt;3<small>SEC</small></div>
+        <h3>“Gap?” · “Fuel?” · “P?”</h3>
+        <p>Answered by a fast small model — often sub-second. Ask anything and it comes straight back, no waiting on the heavy lifting.</p>
+      </div>
+      <div class="rt-card alert">
+        <span class="badge">Event calls</span>
+        <div class="num">0<small>MS</small></div>
+        <h3>Safety car · Red flag · Box · Blue flag</h3>
+        <p>Pre-recorded and played immediately. Critical calls bypass the AI entirely — zero delay when it counts.</p>
+      </div>
+      <div class="rt-card">
+        <span class="badge">Strategy</span>
+        <div class="num">~20<small>SEC</small></div>
+        <h3>Full periodic telemetry calls</h3>
+        <p>Designed to say things still true a lap later, so the round-trip latency simply doesn't matter.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="sec" id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Everything it does</span>
+      <h2>Built like a real pit wall.</h2>
+      <p>A full race-engineer stack — voice, memory, routing, dashboard — running on your own hardware.</p>
+    </div>
+    <div class="features">
+      <div class="feat"><span class="num mono">01</span><span class="ico">🎙️</span><h3>Voice race engineer</h3><p>Speaks radio calls out loud via a Piper neural voice. Calm, terse, factual — no coaching fluff.</p></div>
+      <div class="feat"><span class="num mono">02</span><span class="ico">🗣️</span><h3>Talk back to it</h3><p>Voice input via VAD + Whisper speech-to-text. Ask “gap?”, “fuel?”, “should I box?” and it answers.</p></div>
+      <div class="feat"><span class="num mono">03</span><span class="ico">⚡</span><h3>Instant event calls</h3><p>Safety car, VSC, red flag, blue flag, “box this lap”, SC ending — played immediately, no AI delay.</p></div>
+      <div class="feat"><span class="num mono">04</span><span class="ico">🧠</span><h3>Smart routing</h3><p>A fast 3B model handles simple questions in &lt;3s and only escalates hard ones — with a “give us a second” bridge.</p></div>
+      <div class="feat"><span class="num mono">05</span><span class="ico">🎯</span><h3>Section routing</h3><p>Sends only the telemetry that matters to your question — tyres query gets just tyre data. Fewer tokens, faster answers.</p></div>
+      <div class="feat"><span class="num mono">06</span><span class="ico">📓</span><h3>Engineer memory</h3><p>Remembers recent calls and 13 topics — gap, tyres, fuel, ERS, weather, damage, pit plan, strategy, lap times — so it never repeats itself.</p></div>
+      <div class="feat"><span class="num mono">07</span><span class="ico">📊</span><h3>Live dashboard</h3><p>Speed, gear, RPM, throttle/brake/steer, lap &amp; sector times, tyre temps, and a rolling 60-second trace chart.</p></div>
+      <div class="feat"><span class="num mono">08</span><span class="ico">📱</span><h3>LAN hosting</h3><p>Flip a toggle to view the dashboard from your phone or another device on your WiFi.</p></div>
+      <div class="feat"><span class="num mono">09</span><span class="ico">🌍</span><h3>9 languages</h3><p>English, Español, Italiano, Français, Deutsch, Português, Čeština, Polski, 日本語.</p></div>
+      <div class="feat"><span class="num mono">10</span><span class="ico">🔌</span><h3>Bring-your-own model</h3><p>OpenRouter, Groq, Anthropic, local Ollama — or any custom OpenAI-compatible endpoint.</p></div>
+      <div class="feat"><span class="num mono">11</span><span class="ico">🎚️</span><h3>Fully tunable</h3><p>Chattiness slider, mute under yellow flag, suppress fuel chatter, tick interval, custom instructions, or override the whole prompt.</p></div>
+      <div class="feat"><span class="num mono">12</span><span class="ico">🎧</span><h3>Your mic &amp; speaker</h3><p>Pick any input/output device. Local or cloud (Groq) transcription. First-run wizard; desktop app or headless.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GAMES ============ -->
+<section class="sec" id="games">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Game support</span>
+      <h2>Built and verified for F1 25 / 26.</h2>
+      <p>Older games (F1 21–24) are selectable but unverified. Here's exactly where things stand.</p>
+    </div>
+    <div class="games-grid">
+      <div class="game-block">
+        <div class="status ok"><span class="livedot"></span> Confirmed · Fully supported</div>
+        <h3>F1 25</h3>
+        <div class="list">
+          <div class="row"><span class="k">▸</span><span><b style="color:var(--white)">2026 Season Pack format</b> — the default. Adds overtake mode, active aero and the C6 tyre.</span></div>
+          <div class="row"><span class="k">▸</span><span><b style="color:var(--white)">2025 classic format</b> — the original UDP layout, fully supported.</span></div>
+        </div>
+        <div class="game-tags">
+          <span class="gt on">2026 Season Pack</span>
+          <span class="gt on">2025 classic</span>
+        </div>
+      </div>
+
+      <div class="game-block exp">
+        <div class="status warn">⚠ Selectable · Not verified</div>
+        <h3>F1 24 · 23 · 22 · 2021</h3>
+        <div class="list">
+          <div class="row"><span class="k">▸</span><span>The app can decode their UDP formats, but they haven't been tested or verified.</span></div>
+          <div class="row"><span class="k">▸</span><span>Treat as older titles — experimental / unverified. They may work; no promises.</span></div>
+        </div>
+        <div class="game-tags">
+          <span class="gt">F1 24</span>
+          <span class="gt">F1 23</span>
+          <span class="gt">F1 22</span>
+          <span class="gt">F1 2021</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="udp-note">
+      <span>Telemetry arrives over UDP —</span>
+      <span>game port <span class="port">20777</span>.</span>
+      <span style="color:var(--muted);">Just match the port &amp; format in the game's <b style="color:var(--soft)">Settings → Telemetry</b> menu.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LANGUAGES ============ -->
+<section class="sec" id="languages">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Nine languages</span>
+      <h2>It speaks your language.</h2>
+    </div>
+    <div class="langs">
+      <span class="lang">English <span class="code">EN</span></span>
+      <span class="lang">Español <span class="code">ES</span></span>
+      <span class="lang">Italiano <span class="code">IT</span></span>
+      <span class="lang">Français <span class="code">FR</span></span>
+      <span class="lang">Deutsch <span class="code">DE</span></span>
+      <span class="lang">Português <span class="code">PT</span></span>
+      <span class="lang">Čeština <span class="code">CS</span></span>
+      <span class="lang">Polski <span class="code">PL</span></span>
+      <span class="lang">日本語 <span class="code">JA</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DEVELOPER ============ -->
+<section class="sec" id="developer">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">The developer</span>
+      <h2>One dev. One passion project.</h2>
+      <p>airace is built and maintained by a solo developer. Follow my GitHub profile and watch it in action on YouTube — the repo goes public when it's ready.</p>
+    </div>
+    <div class="dev-grid">
+      <a class="dev-card" href="https://github.com/nothing-gpu" target="_blank" rel="noopener">
+        <span class="dev-ico">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.3-.5-1.5.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg>
+        </span>
+        <span class="dev-meta">
+          <span class="dev-k">GitHub</span>
+          <span class="dev-v">nothing-gpu</span>
+        </span>
+        <span class="dev-arrow">↗</span>
+      </a>
+      <a class="dev-card" href="https://www.youtube.com/@pmech-yt" target="_blank" rel="noopener">
+        <span class="dev-ico">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.3 3.6-6.3 3.6Z"/></svg>
+        </span>
+        <span class="dev-meta">
+          <span class="dev-k">YouTube</span>
+          <span class="dev-v">@pmech-yt</span>
+        </span>
+        <span class="dev-arrow">↗</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="final">
+  <div class="wrap">
+    <span class="eyebrow" style="justify-content:center;display:flex;margin-bottom:18px;"><span class="livedot"></span> App coming soon · Free &amp; open source</span>
+    <h2>Put an engineer<br/>in your ear.</h2>
+    <p>The app is on its way — the repo's still private for now. Follow my GitHub profile and subscribe on YouTube to catch it the moment it drops.</p>
+    <div class="hero-ctas">
+      <span class="btn soon" aria-disabled="true"><span class="dot"></span> Download app <span class="lbl-soon">Coming soon</span></span>
+      <a class="btn solid" href="https://github.com/nothing-gpu" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.3-.5-1.5.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg>
+        View my GitHub
+      </a>
+      <a class="btn" href="https://www.youtube.com/@pmech-yt" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.3 3.6-6.3 3.6Z"/></svg>
+        Watch on YouTube
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a class="brand" href="#top">
+          <span class="ring">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="airace helmet">
+              <circle cx="256" cy="256" r="256" fill="#000000"/>
+              <g fill="none" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M146,410 L420,410 C452,410 458,380 452,345 C448,300 446,240 419,205 C400,150 320,96 228,98 C150,100 78,160 70,235 C64,300 90,410 146,410 Z"/>
+                <path d="M419,205 C360,200 250,200 224,250 C214,275 240,300 300,305 L452,345"/>
+              </g>
+            </svg>
+          </span>
+          <span class="name"><b>airace</b></span>
+        </a>
+        <p>Your AI race engineer. Radio calls, powered by your telemetry. A passion project by a solo dev — free and open source.</p>
+      </div>
+      <div class="foot-links">
+        <div class="foot-col">
+          <h4>Project</h4>
+          <a href="https://github.com/nothing-gpu" target="_blank" rel="noopener">GitHub — nothing-gpu</a>
+          <a href="https://www.youtube.com/@pmech-yt" target="_blank" rel="noopener">YouTube — @pmech-yt</a>
+        </div>
+        <div class="foot-col">
+          <h4>On this page</h4>
+          <a href="#features">Features</a>
+          <a href="#speed">Response time</a>
+          <a href="#games">Game support</a>
+          <a href="#free">Free / BYO key</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span class="tag">airace · your keys, your models, your data</span>
+      <span class="vibecoded">(yeah, this is probably vibecoded)</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
