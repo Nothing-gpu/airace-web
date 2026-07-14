@@ -3,11 +3,43 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>airace · Your AI race engineer</title>
+<title>airace - The race engineer</title>
 <meta name="description" content="airace listens to your live F1 telemetry over UDP, runs it through an LLM pipeline, and speaks engineer-style radio calls back to you in real time. Free, open source, bring your own key." />
+<link rel="canonical" href="https://airacegp.com/" />
 
-<!-- Favicon: racing helmet mark -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='256' fill='%23000000'/%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-width='20' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M146,410 L420,410 C452,410 458,380 452,345 C448,300 446,240 419,205 C400,150 320,96 228,98 C150,100 78,160 70,235 C64,300 90,410 146,410 Z'/%3E%3Cpath d='M419,205 C360,200 250,200 224,250 C214,275 240,300 300,305 L452,345'/%3E%3C/g%3E%3C/svg%3E" />
+<!-- Favicon: hosted files so Google & browsers can crawl them -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+<!-- Open Graph / social share -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="airace" />
+<meta property="og:title" content="airace - The race engineer" />
+<meta property="og:description" content="Live F1 telemetry in. Engineer-style radio calls out. Free, open source, bring your own key." />
+<meta property="og:url" content="https://airacegp.com/" />
+<meta property="og:image" content="https://airacegp.com/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="airace - The race engineer" />
+<meta name="twitter:description" content="Live F1 telemetry in. Engineer-style radio calls out. Free, open source, bring your own key." />
+<meta name="twitter:image" content="https://airacegp.com/og-image.png" />
+
+<!-- Structured data: helps Google understand this is a software product, not the other 'Airace' brands -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "airace",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Windows, macOS, Linux",
+  "description": "An AI race engineer for F1 sim racing. Reads live telemetry over UDP and speaks engineer-style radio calls in real time.",
+  "url": "https://airacegp.com/",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
