@@ -495,6 +495,9 @@ footer{padding:56px 0 40px;}
 .reveal.d1{transition-delay:.06s}
 .reveal.d2{transition-delay:.12s}
 .reveal.d3{transition-delay:.18s}
+/* The hero is already in view on load — reveal-on-scroll there only fades in
+   the Largest Contentful Paint element (~+0.8s to LCP). Render it immediately. */
+.hero .reveal{opacity:1;transform:none;transition:none;}
 
 /* ---------- model freedom ---------- */
 .manifesto{border:var(--rule) solid var(--white);padding:44px 34px;text-align:center;margin-bottom:36px;}
