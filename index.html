@@ -367,6 +367,40 @@ section{position:relative;}
 .feat p{font-size:13.5px;color:var(--muted);line-height:1.5;}
 .feat .num{position:absolute;top:22px;right:22px;font-family:var(--mono);font-size:11px;color:var(--dim);}
 
+/* ---------- credits ---------- */
+.cred-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border: var(--rule) solid var(--white);
+}
+@media (max-width: 820px) { .cred-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 520px) { .cred-grid { grid-template-columns: 1fr; } }
+.cred {
+  padding: 24px 22px;
+  border-right: var(--rule) solid var(--white);
+  border-bottom: var(--rule) solid var(--white);
+}
+.cred-grid .cred:nth-child(3n) { border-right: none; }
+@media (max-width: 820px) {
+  .cred-grid .cred:nth-child(3n) { border-right: var(--rule) solid var(--white); }
+  .cred-grid .cred:nth-child(2n) { border-right: none; }
+}
+@media (max-width: 520px) { .cred-grid .cred { border-right: none !important; } }
+.cred-k {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 10px;
+}
+.cred p {
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
 /* ---------- response time ---------- */
 .rt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
 @media(max-width:820px){.rt-grid{grid-template-columns:1fr;}}
@@ -580,6 +614,7 @@ footer{padding:56px 0 40px;}
       <a class="navlink" href="#speed">Speed</a>
       <a class="navlink" href="#games">Games</a>
       <a class="navlink" href="#free">Free</a>
+      <a class="navlink" href="#credits">Credits</a>
     </nav>
 
     <div class="nav-cta">
@@ -934,6 +969,65 @@ footer{padding:56px 0 40px;}
   </div>
 </section>
 
+<!-- ============ CREDITS ============ -->
+<section class="sec" id="credits">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2>Standing on other people's work.</h2>
+      <p>airaceGP is a small project built on a lot of open work. This
+      page names some of the people whose code, voices, translations
+      and track maps make it possible. The full list, including every
+      permissive license we depend on, lives in the app repo at
+      <a href="https://github.com/nothing-gpu/airarce-ui/blob/main/airacee/airacee/CREDITS.md" style="color:var(--white);text-decoration:underline;">CREDITS.md</a>
+      and <a href="https://github.com/nothing-gpu/airarce-ui/blob/main/airacee/airacee/NOTICES.md" style="color:var(--white);text-decoration:underline;">NOTICES.md</a>.</p>
+    </div>
+    <div class="cred-grid reveal d1">
+      <div class="cred">
+        <div class="cred-k">Voice</div>
+        <p>Piper by Michael Hansen and the Rhasspy project, and
+        piper-plus by ayutaz. Voice datasets by Thorsten Mueller
+        (German), Carlos Fonseca (Spanish), czyzi0 (Polish), the Nabu
+        Casa voice-datasets team (Portuguese, Czech), the SIWIS
+        project (French).</p>
+      </div>
+      <div class="cred">
+        <div class="cred-k">Speech recognition</div>
+        <p>Vosk by Alpha Cephei for the wake word. faster-whisper by
+        SYSTRAN, riding on CTranslate2 by OpenNMT and SYSTRAN, with
+        weights from OpenAI's Whisper. All MIT or Apache 2.0.</p>
+      </div>
+      <div class="cred">
+        <div class="cred-k">Translation</div>
+        <p>Argos Translate by Argos Open Technologies, with models
+        trained on the OPUS parallel corpus collection curated by
+        Joerg Tiedemann and the Helsinki-NLP group.</p>
+      </div>
+      <div class="cred">
+        <div class="cred-k">Track outlines</div>
+        <p>Traced from Wikimedia Commons maps by Will Pittenger,
+        GabrielStella, HumanBodyPiloter5, Rumbin, Firkin, AlexJ,
+        Ocdp, Sas1998, Dh16dh, Nasho3498, cBuckley, and
+        ごひょううぺこ. CC0, CC BY 3.0, CC BY-SA 3.0 / 4.0.</p>
+      </div>
+      <div class="cred">
+        <div class="cred-k">Dashboard</div>
+        <p>Instrument Sans by the Instrument Sans Project Authors,
+        Titillium Web by the Accademia di Belle Arti di Urbino, both
+        SIL Open Font License 1.1. pywebview by Roman Sirokov,
+        python-sounddevice by Matthias Geier, PortAudio by Ross
+        Bencina and Phil Burk, NumPy contributors, ONNX Runtime by
+        Microsoft.</p>
+      </div>
+      <div class="cred">
+        <div class="cred-k">Telemetry spec</div>
+        <p>The F1 25 UDP telemetry specification, published by EA and
+        Codemasters for third-party tools. Packet layouts referenced
+        from the hotlaps.io specs (MIT).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <!-- ============ FOOTER ============ -->
@@ -967,6 +1061,7 @@ footer{padding:56px 0 40px;}
           <a href="#speed">Response time</a>
           <a href="#games">Game support</a>
           <a href="#free">Free / BYO key</a>
+          <a href="#credits">Credits</a>
         </div>
       </div>
     </div>
