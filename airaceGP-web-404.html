@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>404 - Off the racing line · airaceGP</title>
+<meta name="robots" content="noindex" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Chivo+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --black:#000;--near:#0A0A0A;--white:#fff;--soft:#EDEDED;--muted:#9A9A9A;--dim:#565656;
+  --red:#FF2D1A;--hair:rgba(255,255,255,0.16);--rule:1.5px;
+  --disp:"Instrument Sans",system-ui,sans-serif;--mono:"Chivo Mono",ui-monospace,monospace;
+  --ease:cubic-bezier(.16,.84,.44,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--soft);font-family:var(--disp);line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden;}
+:where(a,button):focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:4px;}
+.bg-fx{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.bg-fx.scanlines{background-image:repeating-linear-gradient(to bottom,rgba(255,255,255,.025) 0,rgba(255,255,255,.025) 1px,transparent 1px,transparent 4px);opacity:.55;}
+.bg-fx.grain{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");opacity:.05;mix-blend-mode:screen;}
+.bg-fx.traces{overflow:hidden;}
+.bg-fx.traces svg{position:absolute;width:200%;height:100%;left:-50%;top:0;opacity:.10;}
+.trace-path{fill:none;stroke:var(--white);stroke-width:1;stroke-dasharray:6 10;animation:drift 40s linear infinite;}
+.trace-path.red{stroke:var(--red);opacity:.5;animation-duration:55s;}
+@keyframes drift{to{stroke-dashoffset:-320;}}
+.wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 24px;width:100%;}
+header{position:sticky;top:0;z-index:50;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);border-bottom:var(--rule) solid var(--white);}
+.nav{display:flex;align-items:center;justify-content:space-between;height:66px;}
+.brand{display:flex;align-items:center;gap:13px;text-decoration:none;color:var(--white);}
+.brand .ring{width:40px;height:40px;border-radius:50%;border:var(--rule) solid var(--white);display:flex;align-items:center;justify-content:center;padding:3px;flex:none;}
+.brand .ring svg{width:100%;height:100%;}
+.brand .name{font-size:19px;font-weight:700;letter-spacing:.02em;}
+.btn{display:inline-flex;align-items:center;gap:9px;border:var(--rule) solid var(--white);border-radius:3px;padding:12px 22px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--white);text-decoration:none;background:transparent;transition:background .18s var(--ease),color .18s var(--ease);font-family:var(--mono);white-space:nowrap;}
+.btn:hover{background:var(--white);color:var(--black);}
+.btn.small{padding:8px 16px;font-size:11px;}
+.btn svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+main{flex:1;display:flex;align-items:center;position:relative;z-index:1;padding:64px 0;}
+.err-eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:22px;}
+.err-flag{width:16px;height:12px;background:
+  repeating-conic-gradient(var(--white) 0% 25%, var(--red) 0% 50%) 50%/6px 6px;border:1px solid var(--hair);}
+.big404{font-family:var(--disp);font-weight:700;font-size:clamp(90px,20vw,220px);line-height:.86;letter-spacing:-.03em;color:var(--white);text-transform:uppercase;font-variant-numeric:tabular-nums;}
+.big404 .z{color:var(--red);}
+h1{font-weight:700;font-size:clamp(26px,4vw,44px);letter-spacing:-.01em;color:var(--white);text-transform:uppercase;line-height:1;margin:26px 0 16px;}
+.lead{color:var(--muted);font-size:16px;max-width:46ch;margin-bottom:30px;}
+.ctas{display:flex;flex-wrap:wrap;gap:12px;}
+.readout{margin-top:44px;border-top:var(--rule) solid var(--white);display:grid;grid-template-columns:repeat(3,1fr);max-width:560px;}
+.readout .cell{padding:16px 18px;border-right:var(--rule) solid var(--hair);}
+.readout .cell:last-child{border-right:none;}
+.readout .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;}
+.readout .v{font-family:var(--mono);font-size:15px;color:var(--white);}
+.readout .v.on{color:var(--red);}
+footer{border-top:var(--rule) solid var(--white);padding:22px 0;position:relative;z-index:1;}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;}
+.foot a{color:var(--muted);text-decoration:none;}
+.foot a:hover{color:var(--white);}
+@media(max-width:520px){.ctas .btn{width:100%;justify-content:center;}.readout{grid-template-columns:1fr 1fr;}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="bg-fx traces" aria-hidden="true">
+  <svg viewBox="0 0 1600 900" preserveAspectRatio="none">
+    <path class="trace-path" d="M-100,720 C200,700 340,420 560,430 C760,440 820,690 1040,700 C1260,710 1360,300 1700,340"/>
+    <path class="trace-path red" d="M-100,540 C260,560 380,240 620,250 C900,262 980,520 1240,500 C1440,485 1520,200 1700,220"/>
+    <path class="trace-path" d="M-100,300 C240,320 420,120 700,140 C980,160 1080,360 1360,340 C1520,330 1600,160 1700,150"/>
+  </svg>
+</div>
+<div class="bg-fx scanlines" aria-hidden="true"></div>
+<div class="bg-fx grain" aria-hidden="true"></div>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="/" aria-label="airaceGP home">
+      <span class="ring">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="airaceGP helmet">
+          <circle cx="256" cy="256" r="256" fill="#000"/>
+          <g fill="none" stroke="#fff" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M146,410 L420,410 C452,410 458,380 452,345 C448,300 446,240 419,205 C400,150 320,96 228,98 C150,100 78,160 70,235 C64,300 90,410 146,410 Z"/>
+            <path d="M419,205 C360,200 250,200 224,250 C214,275 240,300 300,305 L452,345"/>
+          </g>
+        </svg>
+      </span>
+      <span class="name">airaceGP</span>
+    </a>
+    <a class="btn small" href="/">Back home</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="big404">4<span class="z">0</span>4</div>
+    <h1>You went off the track.</h1>
+    <p class="lead">This page spun off into the gravel. There is nothing here, but the pit wall is still on the radio. Let's get you back on track.</p>
+    <div class="ctas">
+      <a class="btn" href="/">Return to the pit wall</a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>airaceGP · your keys, your models, your data</span>
+    <span><a href="https://github.com/nothing-gpu" target="_blank" rel="noopener">GitHub</a> · <a href="https://www.youtube.com/@pmech-yt" target="_blank" rel="noopener">YouTube</a></span>
+  </div>
+  <div class="wrap" style="margin-top:14px;font-family:var(--mono);font-size:10px;letter-spacing:.02em;color:var(--dim);text-transform:none;line-height:1.55;max-width:780px;">
+    airaceGP is an unofficial fan-made tool. It is not affiliated with, endorsed by, or in
+    partnership with Formula One Licensing BV, the FIA, Electronic Arts Inc., or Codemasters.
+    F1, FORMULA 1, FIA FORMULA ONE WORLD CHAMPIONSHIP and related marks are trademarks of
+    Formula One Licensing BV. F1 25 is a product of Electronic Arts Inc. and Codemasters.
+    Game names are used solely to identify compatibility.
+  </div>
+</footer>
+</body>
+</html>
