@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>airaceGP — AI race engineer for ACC</title>
-<meta name="description" content="An AI race engineer for Assetto Corsa Competizione. Voice replies, fuel planning and pit-stop warnings. Your voice, your race, your choice of AI provider." />
+<title>airaceGP — AI race engineer for ACC and F1 25</title>
+<meta name="description" content="An AI race engineer for Assetto Corsa Competizione, with F1 25 support. It reads live telemetry, works out fuel, tyres, gaps and damage, and talks to you over the radio. Your choice of AI, keys kept on your PC." />
+<meta name="theme-color" content="#0d0f12" />
 <link rel="canonical" href="https://airacegp.com/" />
 
 <!-- Favicon: hosted files so Google & browsers can crawl them -->
@@ -16,15 +17,16 @@
 <!-- Open Graph / social share -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="airaceGP" />
-<meta property="og:title" content="airaceGP — AI race engineer for ACC" />
-<meta property="og:description" content="An AI race engineer for Assetto Corsa Competizione. Voice replies, fuel planning and pit-stop warnings for your race." />
+<meta property="og:title" content="airaceGP — AI race engineer for ACC and F1 25" />
+<meta property="og:description" content="Live telemetry in, radio calls out. The app works out fuel, tyres, gaps and damage; the AI of your choice says it like a race engineer." />
 <meta property="og:url" content="https://airacegp.com/" />
 <meta property="og:image" content="https://airacegp.com/og-image.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="airaceGP: an AI race engineer on your radio. Assetto Corsa Competizione and F1 25." />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="airaceGP — AI race engineer for ACC" />
-<meta name="twitter:description" content="An AI race engineer for Assetto Corsa Competizione. Voice replies, fuel planning and pit-stop warnings for your race." />
+<meta name="twitter:title" content="airaceGP — AI race engineer for ACC and F1 25" />
+<meta name="twitter:description" content="Live telemetry in, radio calls out. The app works out fuel, tyres, gaps and damage; the AI of your choice says it like a race engineer." />
 <meta name="twitter:image" content="https://airacegp.com/og-image.png" />
 
 <!-- Structured data: helps Google understand this is a software product, not the other 'AiraceGP' brands -->
@@ -35,1045 +37,909 @@
   "name": "airaceGP",
   "applicationCategory": "GameApplication",
   "operatingSystem": "Windows",
-  "description": "An AI race engineer for Assetto Corsa Competizione with spoken radio replies, fuel planning and pit-stop warnings.",
+  "description": "An AI race engineer for Assetto Corsa Competizione, with F1 25 support. It reads live telemetry, works out fuel, tyre pressures, gaps, damage and weather, and speaks radio calls and answers to the driver. Works with Ollama Cloud, Groq, Google Gemini, OpenRouter, Anthropic, OpenAI-compatible endpoints or local Ollama. Nine languages.",
   "url": "https://airacegp.com/",
+  "inLanguage": ["en", "es", "it", "fr", "de", "pt", "cs", "pl", "ja"],
+  "sameAs": ["https://github.com/nothing-gpu", "https://www.youtube.com/@pmech-yt"],
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
 }
 </script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<!-- Load fonts without blocking render: swap in once the stylesheet arrives, system-ui shows first -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700&family=Chivo+Mono:wght@400;500;600&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700&family=Chivo+Mono:wght@400;500;600&display=swap" /></noscript>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" /></noscript>
 
 <style>
 :root{
-  --black:#000000;
-  --near:#0A0A0A;
-  --white:#FFFFFF;
-  --soft:#EDEDED;
-  --muted:#9A9A9A;      /* lifted from #8A8A8A → ~5.3:1 on black for AA body */
-  --dim:#7A7A7A;        /* ~4.7:1 on black → AA for small decorative text */
-  --line:#FFFFFF;
-  --hair:rgba(255,255,255,0.16);
-  --red:#FF2D1A;
-  --red-deep:#C21D0E;
-  --rule:1.5px;
-  --track:0.15em;
-  --maxw:1200px;
-  --disp:"Instrument Sans", system-ui, sans-serif;
-  --mono:"Chivo Mono", ui-monospace, monospace;
-  /* spacing rhythm (8pt) */
-  --s2:16px; --s3:24px; --s4:32px; --s6:48px; --s8:64px; --s10:80px;
-  --ease-out:cubic-bezier(.16,.84,.44,1);
+  --ground:#0d0f12;
+  --panel:#15191e;
+  --panel-2:#1b2027;
+  --text:#e8eaed;
+  --muted:#9aa3ad;
+  --accent:#ff5a3c;
+  --line:rgba(232,234,237,.10);
+  --line-2:rgba(232,234,237,.18);
+  --disp:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+  --maxw:1240px;
+  --gutter:clamp(16px,4vw,40px);
+  --ease:cubic-bezier(.16,.84,.44,1);
 }
-
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:72px;-webkit-text-size-adjust:100%}
 body{
-  background:var(--black);
-  color:var(--soft);
-  font-family:"Instrument Sans", system-ui, -apple-system, sans-serif;
-  font-size:16px;
-  line-height:1.55;
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
-  position:relative;
+  background:var(--ground);color:var(--text);
+  font-family:var(--body);font-size:17px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
+img,svg{display:block;max-width:100%}
+a{color:inherit}
+p a{color:var(--text);text-decoration-color:var(--accent);text-underline-offset:3px}
+p a:hover{color:var(--accent)}
+:where(a,button,summary,[tabindex]):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.skip{position:absolute;left:12px;top:-60px;z-index:100;background:var(--accent);color:var(--ground);padding:10px 14px;font:700 14px var(--body);text-decoration:none}
+.skip:focus{top:12px}
 
-/* ---- accessible focus ring (was missing entirely) ---- */
-:where(a,button,[tabindex]):focus-visible{
-  outline:2px solid var(--red);
-  outline-offset:3px;
-  border-radius:4px;
-}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gutter)}
 
-/* ---------- background texture layers ---------- */
-.bg-fx{position:fixed;inset:0;pointer-events:none;z-index:0;}
-.bg-fx.scanlines{
-  background-image:repeating-linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.025) 0px,
-    rgba(255,255,255,0.025) 1px,
-    transparent 1px,
-    transparent 4px
-  );
-  opacity:.55;
-}
-.bg-fx.grain{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
-  opacity:.05;
-  mix-blend-mode:screen;
-}
-.bg-fx.traces{overflow:hidden;}
-/* GPU-composited transform drift instead of animating stroke-dashoffset (paint) */
-.bg-fx.traces svg{
-  position:absolute;width:200%;height:100%;left:-50%;top:0;opacity:.10;
-  animation:traceDrift 60s linear infinite;will-change:transform;
-}
-.trace-path{
-  fill:none;stroke:var(--white);stroke-width:1;
-  stroke-dasharray:6 10;
-}
-.trace-path.red{stroke:var(--red);opacity:.5;}
-@keyframes traceDrift{from{transform:translateX(0)}to{transform:translateX(-6%)}}
+/* ---------- type ---------- */
+.label{font:600 12px/1.2 var(--disp);letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.label.accent{color:var(--accent)}
+.h-sec{font:700 clamp(40px,6vw,76px)/.92 var(--disp);text-transform:uppercase;letter-spacing:.005em;color:var(--text);margin:14px 0 18px;max-width:16ch}
+.h-sec em{font-style:normal;color:var(--accent)}
+.lead{color:var(--muted);font-size:clamp(17px,1.6vw,19px);max-width:58ch}
+.lead strong{color:var(--text);font-weight:600}
 
-.wrap{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:0 24px;}
-
-/* ---------- shared type ---------- */
-.tag{
-  font-family:var(--mono);
-  text-transform:uppercase;
-  letter-spacing:var(--track);
-  font-size:11px;
-  color:var(--muted);
-  font-weight:500;
-}
-.eyebrow{
-  display:inline-flex;align-items:center;gap:10px;
-  text-transform:uppercase;letter-spacing:0.16em;
-  font-size:11px;font-weight:600;color:var(--muted);
-  font-family:var(--mono);
-}
-h1,h2,h3{font-weight:700;line-height:1.05;letter-spacing:-0.01em;color:var(--white);}
-h2{font-size:clamp(28px,4vw,44px);}
-h3{font-size:20px;letter-spacing:0;}
-
-.mono{font-family:var(--mono);}
-.tnum{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;}
-.red{color:var(--red);}
-.livedot{
-  width:9px;height:9px;border-radius:50%;background:var(--red);
-  box-shadow:0 0 0 0 rgba(255,45,26,.6);
-  animation:pulse 1.6s ease-out infinite;display:inline-block;flex:none;
-}
-@keyframes pulse{
-  0%{box-shadow:0 0 0 0 rgba(255,45,26,.55)}
-  70%{box-shadow:0 0 0 8px rgba(255,45,26,0)}
-  100%{box-shadow:0 0 0 0 rgba(255,45,26,0)}
-}
-
-/* consistent icon system (replaces emoji) */
-.i{width:22px;height:22px;stroke:currentColor;stroke-width:1.75;fill:none;
-   stroke-linecap:round;stroke-linejoin:round;display:block;}
-.i-sm{width:16px;height:16px;}
+section{position:relative}
+.sec{padding:clamp(72px,10vw,128px) 0;border-top:1px solid var(--line)}
+.sec-head{margin-bottom:clamp(36px,5vw,64px)}
+.sec-num{font:500 12px var(--mono);color:var(--muted);letter-spacing:.08em}
+.sec-num b{color:var(--accent);font-weight:700}
 
 /* ---------- buttons ---------- */
-.btn{
-  display:inline-flex;align-items:center;gap:9px;
-  border:var(--rule) solid var(--white);
-  border-radius:3px;
-  padding:12px 22px;
-  font-size:13px;font-weight:600;
-  text-transform:uppercase;letter-spacing:0.12em;
-  color:var(--white);text-decoration:none;
-  background:transparent;
-  transition:background .18s var(--ease-out), color .18s var(--ease-out);
-  font-family:var(--mono);
-  cursor:pointer;white-space:nowrap;
-}
-.btn:hover{background:var(--white);color:var(--black);}
-.btn.solid{background:var(--white);color:var(--black);}
-.btn.solid:hover{background:transparent;color:var(--white);}
-.btn svg{width:16px;height:16px;}
-.btn.small{padding:8px 16px;font-size:11px;}
-.btn.soon{
-  border-color:var(--muted);color:var(--muted);
-  cursor:default;position:relative;padding-right:18px;
-}
-.btn.soon:hover{background:transparent;color:var(--muted);transform:none;}
-.btn.soon .dot{width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;}
-.btn.soon .lbl-soon{
-  font-family:var(--mono);font-size:9px;letter-spacing:0.14em;
-  border:1px solid var(--muted);border-radius:3px;padding:2px 7px;margin-left:2px;
-}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 22px;
+  font:700 15px/1.1 var(--disp);letter-spacing:.14em;text-transform:uppercase;text-decoration:none;text-align:center;
+  border:1px solid var(--line-2);color:var(--text);background:transparent;cursor:pointer;
+  transition:background .2s var(--ease),color .2s var(--ease),border-color .2s var(--ease)}
+.btn:hover{border-color:var(--text)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--ground)}
+.btn.primary:hover{background:#ff7359;border-color:#ff7359}
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 13px/1 var(--disp);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);border:1px dashed var(--line-2);padding:0 16px;min-height:48px}
+.dot{width:7px;height:7px;background:var(--accent);flex:none}
 
 /* ---------- header ---------- */
-header{
-  position:sticky;top:0;z-index:50;
-  background:rgba(0,0,0,0.72);
-  backdrop-filter:blur(10px);
-  border-bottom:var(--rule) solid var(--white);
-}
-.nav{
-  display:flex;align-items:center;justify-content:space-between;
-  height:66px;
-}
-.brand{display:flex;align-items:center;gap:13px;text-decoration:none;color:var(--white);}
-.brand .ring{
-  width:40px;height:40px;border-radius:50%;
-  border:var(--rule) solid var(--white);
-  display:flex;align-items:center;justify-content:center;
-  padding:3px;flex:none;
-}
-.brand .ring svg{width:100%;height:100%;}
-.brand .name{font-size:19px;font-weight:700;letter-spacing:0.02em;}
-.brand .name b{font-weight:700;}
-.nav-links{display:flex;align-items:center;gap:30px;}
-.nav-links a.navlink{
-  color:var(--soft);text-decoration:none;
-  font-size:11px;font-weight:600;text-transform:uppercase;
-  letter-spacing:0.14em;font-family:var(--mono);
-  transition:color .15s;padding:4px 0;
-}
-.nav-links a.navlink:hover{color:var(--white);}
-.nav-cta{display:flex;align-items:center;gap:10px;}
-@media(max-width:860px){ .nav-links .navlink{display:none;} }
-@media(max-width:520px){
-  .nav-cta .btn span{display:none;}
-  .nav-cta .btn{padding:9px 12px;}
+.site-head{position:sticky;top:0;z-index:50;background:rgba(13,15,18,.95);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:24px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);flex:none}
+.brand svg{width:30px;height:30px}
+.brand-name{font:800 22px/1 var(--disp);letter-spacing:.01em}
+.brand-name span{color:var(--accent)}
+.nav-links{display:flex;gap:2px;margin-left:auto;list-style:none}
+.nav-links a{display:block;padding:10px 12px;font:600 14px/1 var(--disp);letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--muted)}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{flex:none}
+.nav-cta .btn{min-height:40px;padding:0 16px;font-size:14px}
+.menu-btn{display:none;margin-left:auto;min-height:44px;min-width:44px;padding:0 14px;background:none;border:1px solid var(--line-2);color:var(--text);font:700 14px var(--disp);letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
+@media (max-width:980px){
+  .menu-btn{display:inline-flex;align-items:center}
+  .nav-cta{display:none}
+  .nav-links{display:none;position:absolute;left:0;right:0;top:64px;flex-direction:column;background:var(--ground);border-bottom:1px solid var(--line);padding:8px var(--gutter) 16px;margin:0}
+  .nav-links.open{display:flex}
+  .nav-links a{padding:14px 0;font-size:18px;border-bottom:1px solid var(--line)}
 }
 
 /* ---------- hero ---------- */
-.hero{padding:56px 0 44px;border-bottom:var(--rule) solid var(--white);position:relative;}
-.hero-grid{display:grid;grid-template-columns:1.15fr 0.85fr;gap:48px;align-items:center;}
-@media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:36px;}}
+.hero{padding:clamp(40px,7vw,88px) 0 clamp(56px,8vw,104px)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,4vw,64px);align-items:center}
+.hero h1{font:800 clamp(54px,8.4vw,120px)/.86 var(--disp);text-transform:uppercase;letter-spacing:-.005em;margin:18px 0 24px}
+.hero h1 .l2{color:var(--accent);display:block}
+.hero .lead{margin-bottom:32px}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.hero-meta{display:flex;flex-wrap:wrap;gap:12px 28px;margin-top:36px;padding-top:20px;border-top:1px solid var(--line)}
+.hero-meta div{display:flex;flex-direction:column;gap:4px}
+.hero-meta b{font:700 22px/1 var(--disp);letter-spacing:.02em;text-transform:uppercase}
 
-.hero h1{
-  font-size:clamp(40px,7.4vw,82px);
-  line-height:0.94;
-  letter-spacing:-0.025em;
-  margin:0 0 22px;
-  text-transform:uppercase;
-}
-.hero .lead{font-size:clamp(16px,2vw,19px);color:var(--soft);max-width:44ch;margin-bottom:14px;}
-.hero .sub{font-size:15px;color:var(--muted);max-width:46ch;margin-bottom:30px;}
-.hero-ctas{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:26px;}
-.hero-meta{display:flex;flex-wrap:wrap;gap:10px 22px;}
-.chip{
-  display:inline-flex;align-items:center;gap:8px;
-  font-family:var(--mono);font-size:11px;letter-spacing:0.06em;
-  text-transform:uppercase;color:var(--muted);
-}
-.chip b{color:var(--white);font-weight:600;}
-.chip svg{width:13px;height:13px;stroke:var(--red);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
-
-/* radio panel (hero right) */
-.radio{
-  border:var(--rule) solid var(--white);
-  background:var(--near);
-  padding:0;
-}
-.radio-head{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 16px;border-bottom:var(--rule) solid var(--white);
-}
-.radio-head .lbl{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--white);}
-.radio-head .t{font-family:var(--mono);font-size:11px;color:var(--muted);}
-.radio-body{padding:16px;display:flex;flex-direction:column;gap:14px;}
-.msg{display:flex;flex-direction:column;gap:4px;opacity:0;transform:translateY(6px);animation:msgIn .5s var(--ease-out) forwards;}
-.msg:nth-child(1){animation-delay:.25s}
-.msg:nth-child(2){animation-delay:.65s}
-.msg:nth-child(3){animation-delay:1.15s}
-.msg:nth-child(4){animation-delay:1.55s}
-@keyframes msgIn{to{opacity:1;transform:none}}
-.msg .who{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
-.msg .txt{font-size:14.5px;line-height:1.4;color:var(--soft);}
-.msg.eng{border-left:2px solid var(--red);padding-left:12px;margin-left:-2px;}
-.msg.eng .txt{color:var(--white);}
-.msg .txt .q{color:var(--white);font-weight:600;}
-.radio-foot{
-  border-top:var(--rule) solid var(--white);
-  padding:11px 16px;display:flex;align-items:center;justify-content:space-between;
-  font-family:var(--mono);font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);
-}
-.eq{display:flex;align-items:flex-end;gap:2px;height:12px;}
-.eq span{width:2px;background:var(--red);animation:eq 1s ease-in-out infinite;}
-.eq span:nth-child(1){height:40%;animation-delay:0s}
-.eq span:nth-child(2){height:90%;animation-delay:.15s}
-.eq span:nth-child(3){height:60%;animation-delay:.3s}
-.eq span:nth-child(4){height:100%;animation-delay:.1s}
-.eq span:nth-child(5){height:50%;animation-delay:.25s}
-@keyframes eq{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
-
-/* live telemetry strip under hero */
-.telebar{
-  border-top:var(--rule) solid var(--white);
-  margin-top:44px;
-  display:grid;grid-template-columns:repeat(5,1fr);
-}
-@media(max-width:720px){.telebar{grid-template-columns:repeat(2,1fr);}}
-.tele{
-  padding:16px 18px;border-right:var(--rule) solid var(--hair);
-  display:flex;flex-direction:column;gap:4px;
-}
-.telebar .tele:last-child{border-right:none;}
-.tele .k{font-family:var(--mono);font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);}
-.tele .v{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--white);letter-spacing:-0.01em;}
-.tele .v small{font-size:11px;color:var(--muted);letter-spacing:0.06em;}
-.tele .v.on{color:var(--red);}
-
-/* ---------- section scaffolding ---------- */
-section{position:relative;}
-.sec{padding:80px 0;border-bottom:var(--rule) solid var(--white);}
-.sec-head{margin-bottom:46px;max-width:62ch;}
-.sec-head h2{margin:14px 0 12px;}
-.sec-head p{color:var(--muted);font-size:16px;}
-
-/* ---------- BYO key banner ---------- */
-.byok{padding:74px 0;border-bottom:var(--rule) solid var(--white);}
-.byok-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:var(--rule) solid var(--white);}
-@media(max-width:820px){.byok-grid{grid-template-columns:1fr;}}
-.byok-cell{padding:34px 32px;}
-.byok-cell + .byok-cell{border-left:var(--rule) solid var(--white);}
-@media(max-width:820px){.byok-cell + .byok-cell{border-left:none;border-top:var(--rule) solid var(--white);}}
-.byok h2{font-size:clamp(30px,4.5vw,50px);text-transform:uppercase;line-height:0.98;}
-.byok .big{font-size:clamp(30px,4.5vw,50px);}
-.byok p{color:var(--soft);margin-top:16px;max-width:40ch;}
-.byok .fine{color:var(--muted);font-size:14px;margin-top:14px;}
-.free-badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;}
-.pill-static{
-  border:var(--rule) solid var(--white);border-radius:3px;
-  padding:7px 15px;font-family:var(--mono);font-size:11px;
-  letter-spacing:0.1em;text-transform:uppercase;color:var(--white);
-}
-.pill-static.red{border-color:var(--red);color:var(--red);}
-.provider-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;}
-.prov{
-  border:var(--rule) solid var(--muted);border-radius:6px;
-  padding:9px 14px;font-family:var(--mono);font-size:12px;
-  color:var(--soft);letter-spacing:0.04em;display:flex;align-items:center;gap:8px;
-  transition:border-color .15s,color .15s;
-}
-.prov:hover{border-color:var(--white);color:var(--white);}
-.prov .d{font-size:9px;color:var(--red);}
-
-/* ---------- feature grid ---------- */
-.features{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:var(--rule) solid var(--white);}
-@media(max-width:900px){.features{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:600px){.features{grid-template-columns:1fr;}}
-.feat{
-  padding:28px 24px 26px;
-  border-right:var(--rule) solid var(--white);
-  border-bottom:var(--rule) solid var(--white);
-  position:relative;
-  transition:background .18s;
-}
-.feat:hover{background:rgba(255,255,255,0.03);}
-.features .feat:nth-child(3n){border-right:none;}
-@media(max-width:900px){
-  .features .feat:nth-child(3n){border-right:var(--rule) solid var(--white);}
-  .features .feat:nth-child(2n){border-right:none;}
-}
-@media(max-width:600px){ .features .feat{border-right:none!important;} }
-.feat .ico{
-  width:42px;height:42px;border:var(--rule) solid var(--hair);border-radius:10px;
-  display:flex;align-items:center;justify-content:center;color:var(--white);
-  margin-bottom:16px;transition:border-color .18s,color .18s;
-}
-.feat:hover .ico{border-color:var(--red);color:var(--red);}
-.feat h3{font-size:16px;margin-bottom:8px;letter-spacing:0;color:var(--white);}
-.feat p{font-size:13.5px;color:var(--muted);line-height:1.5;}
-.feat .num{position:absolute;top:22px;right:22px;font-family:var(--mono);font-size:11px;color:var(--dim);}
-
-/* ---------- credits ---------- */
-.cred-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0;
-  border: var(--rule) solid var(--white);
-}
-@media (max-width: 820px) { .cred-grid { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 520px) { .cred-grid { grid-template-columns: 1fr; } }
-.cred {
-  padding: 24px 22px;
-  border-right: var(--rule) solid var(--white);
-  border-bottom: var(--rule) solid var(--white);
-}
-.cred-grid .cred:nth-child(3n) { border-right: none; }
-@media (max-width: 820px) {
-  .cred-grid .cred:nth-child(3n) { border-right: var(--rule) solid var(--white); }
-  .cred-grid .cred:nth-child(2n) { border-right: none; }
-}
-@media (max-width: 520px) { .cred-grid .cred { border-right: none !important; } }
-.cred-k {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--dim);
-  margin-bottom: 10px;
-}
-.cred p {
-  color: var(--muted);
-  font-size: 13.5px;
-  line-height: 1.55;
+/* the pit-wall illustration */
+.pw{background:var(--panel);border:1px solid var(--line-2);font-size:13px;position:relative;min-width:0}
+.pw-cap{display:flex;justify-content:space-between;gap:12px;margin-top:10px;font:500 12px var(--mono);color:var(--muted);letter-spacing:.02em}
+.pw-top{display:flex;align-items:center;gap:18px;padding:0 16px;height:46px;border-bottom:1px solid var(--line)}
+.pw-top .brand-name{font-size:17px}
+.pw-tabs{display:flex;gap:2px}
+.pw-tabs span{padding:5px 9px;font:700 11px/1 var(--disp);letter-spacing:.14em;color:var(--muted)}
+.pw-tabs span.on{background:var(--accent);color:var(--ground)}
+.pw-top .sp{flex:1}
+.pw-kv{display:flex;flex-direction:column;gap:2px}
+.pw-kv .label{font-size:9.5px}
+.pw-kv b{font:600 12.5px var(--mono)}
+.live{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--accent);color:var(--accent);padding:4px 8px;font:700 10px/1 var(--disp);letter-spacing:.16em}
+.live i{width:6px;height:6px;background:var(--accent)}
+.pw-head{padding:16px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;align-items:baseline}
+.pw-head .say{font:700 clamp(20px,2.1vw,27px)/1.1 var(--disp);letter-spacing:.01em}
+.pw-body{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}
+.pw-col{padding:14px 16px;min-width:0}
+.pw-col+.pw-col{border-left:1px solid var(--line)}
+.pw-block+.pw-block{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.pw-block>.label{display:flex;justify-content:space-between;margin-bottom:10px;font-size:10px}
+.tower{list-style:none;display:flex;flex-direction:column;gap:6px}
+.tower li{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;padding:7px 8px;background:var(--panel-2)}
+.tower .p{font:700 12px var(--mono);color:var(--muted)}
+.tower .car{font-weight:500;min-width:0;overflow-wrap:anywhere;line-height:1.3}
+.tower .g{font:600 12.5px var(--mono);text-align:right}
+.tower .t{display:block;font:500 10.5px var(--mono);color:var(--muted)}
+.tower .t.c{color:var(--accent)}
+.tower li.me{background:transparent;border:1px solid var(--accent)}
+.tower li.me .p,.tower li.me .g{color:var(--accent)}
+.fuel-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.fuel-row b{font:700 26px/1 var(--mono)}
+.fuel-row small{font:500 11px var(--mono);color:var(--muted)}
+.bar{height:4px;background:var(--line);margin-top:10px;position:relative}
+.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--text)}
+.bar .flag{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--accent)}
+.tyres{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.tyre{background:var(--panel-2);padding:8px;display:flex;justify-content:space-between;align-items:baseline;border-left:2px solid var(--line-2)}
+.tyre b{font:600 14px var(--mono)}
+.tyre span{font:600 10px var(--disp);letter-spacing:.14em;color:var(--muted)}
+.tyre.hi{border-left-color:var(--accent)}
+.tyre.hi b{color:var(--accent)}
+.win{font:500 10.5px var(--mono);color:var(--muted);margin-top:8px}
+.states{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.states div{display:flex;justify-content:space-between;gap:8px;font:500 12px var(--mono);border-bottom:1px dashed var(--line);padding-bottom:5px}
+.states span{color:var(--muted)}
+.pw-radio{border-top:1px solid var(--line);padding:12px 16px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;font:500 12.5px var(--mono)}
+.pw-radio .who{color:var(--muted);font:600 10.5px var(--disp);letter-spacing:.16em;text-transform:uppercase;padding-top:2px}
+.pw-radio .who.e{color:var(--accent)}
+@media (max-width:1100px){.hero-grid{grid-template-columns:minmax(0,1fr)}.hero h1{max-width:11ch}}
+@media (max-width:640px){
+  .pw-body{grid-template-columns:minmax(0,1fr)}
+  .pw-col+.pw-col{border-left:0;border-top:1px solid var(--line)}
+  .pw-tabs{display:none}
+  .pw-top{gap:12px}
+  .pw-head{grid-template-columns:minmax(0,1fr)}
+  .pw-cap{flex-direction:column;gap:2px}
 }
 
-/* ---------- response time ---------- */
-.rt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
-@media(max-width:820px){.rt-grid{grid-template-columns:1fr;}}
-.rt-card{border:var(--rule) solid var(--white);padding:28px 26px;position:relative;}
-.rt-card .num{font-family:var(--mono);font-size:clamp(34px,5vw,52px);font-weight:600;color:var(--white);line-height:1;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;}
-.rt-card .num small{font-size:0.4em;color:var(--muted);letter-spacing:0.1em;}
-.rt-card h3{margin:16px 0 8px;font-size:16px;}
-.rt-card p{color:var(--muted);font-size:13.5px;}
-.rt-card .badge{
-  display:inline-block;font-family:var(--mono);font-size:10px;
-  text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);
-  border:var(--rule) solid var(--muted);border-radius:3px;padding:4px 10px;
+/* ---------- radio moment ---------- */
+.radio{padding:clamp(64px,10vw,128px) 0;border-top:1px solid var(--line);background:
+  repeating-linear-gradient(90deg,transparent 0 79px,rgba(232,234,237,.03) 79px 80px)}
+.radio-q{font:500 clamp(17px,2vw,22px)/1.3 var(--mono);color:var(--muted);margin:22px 0 14px;display:flex;gap:6px 14px;flex-wrap:wrap}
+.radio-q span{font:700 13px/1.9 var(--disp);letter-spacing:.2em;text-transform:uppercase}
+.radio-a{font:800 clamp(40px,7.4vw,104px)/.95 var(--disp);text-transform:uppercase;letter-spacing:-.005em;max-width:17ch}
+.radio-a .who{display:block;font:700 13px/1 var(--disp);letter-spacing:.2em;color:var(--accent);margin-bottom:14px}
+.radio-a .n{color:var(--accent)}
+.wave{display:flex;align-items:center;gap:3px;height:36px;margin-top:36px;max-width:100%}
+.wave i{flex:0 1 3px;min-width:1px;background:var(--muted);height:20%;opacity:.7;transform-origin:center}
+@keyframes talk{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.35)}}
+.radio.in .wave i{animation:talk 1.1s ease-in-out infinite}
+.radio-note{margin-top:22px;color:var(--muted);font-size:16px;max-width:62ch}
+
+/* ---------- analysis / digest ---------- */
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,5vw,80px);align-items:start}
+.checklist{list-style:none;border-top:1px solid var(--line)}
+.checklist li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+.checklist .i{font:500 12px/1.9 var(--mono);color:var(--accent)}
+.checklist b{display:block;font:700 21px/1.15 var(--disp);letter-spacing:.03em;text-transform:uppercase}
+.checklist p{color:var(--muted);font-size:15.5px;margin-top:3px}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:28px}
+.split>div{background:var(--panel);padding:18px}
+.split .label{margin-bottom:8px}
+.split p{font-size:15.5px;color:var(--muted)}
+.split p strong{color:var(--text);font-weight:600}
+
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:clamp(48px,6vw,80px)}
+.metric{background:var(--ground);padding:clamp(20px,2.4vw,32px)}
+.metric .label{margin-bottom:18px}
+.metric .big{font:700 clamp(50px,5.4vw,76px)/1 var(--disp);letter-spacing:.005em}
+.metric .big small{font-size:.42em;color:var(--muted);letter-spacing:.06em;margin-left:4px}
+.metric .from{font:500 13px var(--mono);color:var(--muted);margin-top:8px}
+.mbars{margin-top:22px;display:flex;flex-direction:column;gap:9px}
+.mbar{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;align-items:center;font:500 11px var(--mono);color:var(--muted)}
+.mbar .track{height:8px;background:var(--line)}
+.mbar .fill{height:100%;background:var(--muted);width:var(--w);transform-origin:left;transition:transform 1.1s var(--ease)}
+.mbar.now .fill{background:var(--accent)}
+.mbar.now{color:var(--text)}
+.caveat{margin-top:16px;font:500 12.5px/1.65 var(--mono);color:var(--muted);max-width:92ch}
+
+/* ---------- model chain ---------- */
+.chain{border:1px solid var(--line-2);background:var(--panel)}
+.chain-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line)}
+.toggle{display:inline-flex;align-items:center;gap:10px;font:600 12px var(--disp);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.toggle i{width:34px;height:18px;border:1px solid var(--accent);position:relative;flex:none}
+.toggle i::after{content:"";position:absolute;right:2px;top:2px;width:12px;height:12px;background:var(--accent)}
+.chain-row{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));position:relative}
+.node{padding:24px 18px 26px;position:relative;min-width:0}
+.node+.node{border-left:1px solid var(--line)}
+.node .ord{font:700 12px var(--mono);color:var(--muted)}
+.node .prov{font:700 28px/1.05 var(--disp);letter-spacing:.02em;text-transform:uppercase;margin:10px 0 6px}
+.node .mdl{font:500 13px var(--mono);color:var(--muted);overflow-wrap:anywhere}
+.node .state{margin-top:14px;display:inline-flex;align-items:center;gap:7px;font:600 12px var(--disp);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.node .state i{width:6px;height:6px;background:var(--muted)}
+.node.first{box-shadow:inset 0 3px 0 var(--accent)}
+.node.first .state{color:var(--accent)}
+.node.first .state i{background:var(--accent)}
+.chain-row::before{content:"";position:absolute;left:0;top:0;height:3px;width:33.33%;background:var(--accent);opacity:0;pointer-events:none;z-index:1}
+@keyframes pulse{0%{left:0;opacity:1}28%{left:0;opacity:1}40%{left:33.33%;opacity:1}62%{left:33.33%;opacity:1}74%{left:66.66%;opacity:1}92%{left:66.66%;opacity:1}100%{left:66.66%;opacity:0}}
+.chain.in .chain-row::before{animation:pulse 7s var(--ease) infinite}
+.chain-foot{border-top:1px solid var(--line);padding:14px 18px;display:flex;flex-wrap:wrap;gap:8px 22px;font:500 12.5px var(--mono);color:var(--muted)}
+.chain-foot b{color:var(--text);font-weight:500}
+.providers{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px;list-style:none}
+.providers li{border:1px solid var(--line-2);padding:11px 14px;font:700 16px/1 var(--disp);letter-spacing:.1em;text-transform:uppercase}
+.providers li small{display:block;font:500 11px var(--mono);letter-spacing:0;text-transform:none;color:var(--muted);margin-top:5px}
+.qa{display:grid;grid-template-columns:auto minmax(0,1fr);gap:24px;align-items:center;margin-top:28px;padding:22px;border:1px solid var(--line);border-left:3px solid var(--accent)}
+.qa .score{font:700 clamp(52px,6vw,72px)/1 var(--disp);color:var(--text)}
+.qa .score span{color:var(--muted);font-size:.5em}
+.qa p{color:var(--muted);font-size:15.5px}
+.qa p strong{color:var(--text);font-weight:600}
+@media (max-width:760px){
+  .chain-row{grid-template-columns:minmax(0,1fr)}
+  .node+.node{border-left:0;border-top:1px solid var(--line)}
+  .chain-row::before{display:none}
+  .qa{grid-template-columns:minmax(0,1fr);gap:8px}
 }
-.rt-card.alert .num{color:var(--red);}
-.rt-card.alert .badge{color:var(--red);border-color:var(--red);}
+
+/* ---------- app pages ---------- */
+.pages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.page{background:var(--ground);padding:clamp(20px,2.4vw,28px);display:flex;flex-direction:column;gap:14px;min-width:0}
+.page h3{font:700 32px/1 var(--disp);text-transform:uppercase;letter-spacing:.02em}
+.page p{color:var(--muted);font-size:15.5px}
+.page .fig{background:var(--panel);border:1px solid var(--line);aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;padding:14px;margin-top:auto}
+.page .fig svg{width:100%;height:100%}
+.settings{margin-top:clamp(40px,5vw,64px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:clamp(24px,4vw,56px);align-items:start}
+.settings h3{font:700 34px/1 var(--disp);text-transform:uppercase}
+.settings p{color:var(--muted);margin-top:10px;font-size:15.5px}
+.set-list{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 28px}
+.set-list li{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-weight:500}
+.set-list span{font:500 12.5px/1.9 var(--mono);color:var(--muted);text-align:right}
 
 /* ---------- games ---------- */
-.games-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
-@media(max-width:820px){.games-grid{grid-template-columns:1fr;}}
-.game-block{border:var(--rule) solid var(--white);padding:28px 26px;}
-.game-block .status{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:16px;}
-.game-block .status svg{width:15px;height:15px;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
-.ok{color:var(--white);}
-.ok svg{stroke:var(--red);}
-.warn{color:var(--muted);}
-.warn svg{stroke:var(--muted);}
-.game-block h3{font-size:22px;margin-bottom:10px;}
-.game-block .list{display:flex;flex-direction:column;gap:9px;margin-top:14px;}
-.game-block .list .row{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--soft);}
-.game-block .list .row .k{color:var(--red);font-family:var(--mono);font-size:11px;letter-spacing:0.06em;min-width:14px;padding-top:2px;}
-.game-block.exp{border-color:var(--muted);}
-.game-block.exp h3,.game-block.exp .row{color:var(--muted);}
-.game-block.exp .row .k{color:var(--muted);}
-.game-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
-.gt{font-family:var(--mono);font-size:11px;padding:6px 12px;border:var(--rule) solid var(--muted);border-radius:3px;color:var(--muted);letter-spacing:0.06em;}
-.gt.on{border-color:var(--white);color:var(--white);}
-.udp-note{
-  margin-top:26px;border:var(--rule) solid var(--white);padding:18px 22px;
-  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
-  font-family:var(--mono);font-size:13px;color:var(--soft);
-}
-.udp-note .port{color:var(--red);font-weight:600;}
+.games{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.game{background:var(--panel);padding:clamp(22px,3vw,40px)}
+.game.alt{background:var(--ground)}
+.game h3{font:800 clamp(34px,4vw,52px)/.95 var(--disp);text-transform:uppercase;margin:12px 0 16px}
+.game ul{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.game li{display:grid;grid-template-columns:140px minmax(0,1fr);gap:12px;padding-top:10px;border-top:1px solid var(--line);font-size:15.5px}
+.game li span{font:500 12px/1.9 var(--mono);color:var(--muted)}
 
-/* ---------- languages ---------- */
-.langs{display:flex;flex-wrap:wrap;gap:12px;}
-.lang{
-  border:var(--rule) solid var(--white);border-radius:3px;
-  padding:10px 20px;font-size:14px;color:var(--white);
-  display:flex;align-items:center;gap:9px;transition:background .15s,color .15s;
-}
-.lang:hover{background:var(--white);color:var(--black);}
-.lang .code{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:0.1em;}
-.lang:hover .code{color:var(--black);}
+/* ---------- voice / languages ---------- */
+.langs{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);list-style:none}
+.langs li{background:var(--ground);padding:18px 12px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:background .2s var(--ease)}
+.langs li:hover{background:var(--panel)}
+.langs b{font:700 28px/1 var(--mono);color:var(--text)}
+.langs li:first-child b{color:var(--accent)}
+.langs span{font-size:15px;color:var(--muted)}
+.voice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(20px,3vw,40px);margin-top:clamp(36px,4vw,56px)}
+.voice-grid>div{border-top:2px solid var(--text);padding-top:14px}
+.voice-grid>div:first-child{border-top-color:var(--accent)}
+.voice-grid h3{font:700 23px/1.1 var(--disp);text-transform:uppercase;letter-spacing:.04em;margin:8px 0}
+.voice-grid p{color:var(--muted);font-size:15.5px}
+@media (max-width:980px){.langs{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
-/* ---------- developer ---------- */
-.dev-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
-@media(max-width:640px){.dev-grid{grid-template-columns:1fr;}}
-.dev-card{
-  display:flex;align-items:center;gap:20px;
-  border:var(--rule) solid var(--white);
-  padding:24px 26px;text-decoration:none;color:var(--white);
-  transition:background .18s,color .18s;
-}
-.dev-card:hover{background:var(--white);color:var(--black);}
-.dev-ico{
-  width:46px;height:46px;flex:none;
-  border:var(--rule) solid currentColor;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-}
-.dev-ico svg{width:22px;height:22px;}
-.dev-meta{display:flex;flex-direction:column;gap:3px;flex:1;}
-.dev-k{font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);}
-.dev-card:hover .dev-k{color:var(--black);}
-.dev-v{font-size:19px;font-weight:700;letter-spacing:-0.01em;}
-.dev-arrow{font-size:20px;color:var(--muted);}
-.dev-card:hover .dev-arrow{color:var(--black);}
+/* ---------- start ---------- */
+.steps{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));counter-reset:s;border-top:2px solid var(--text)}
+.steps li{padding:22px 22px 0 0;counter-increment:s}
+.steps li::before{content:counter(s,decimal-leading-zero);display:block;font:700 44px/1 var(--mono);color:var(--muted);margin-bottom:14px}
+.steps li:first-child::before{color:var(--accent)}
+.steps h3{font:700 24px/1.1 var(--disp);text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px}
+.steps p{color:var(--muted);font-size:15.5px}
+.steps code{font:500 13px var(--mono);color:var(--text);background:var(--panel);padding:1px 5px}
+.start-foot{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center;justify-content:space-between;margin-top:clamp(40px,5vw,64px);padding:22px;background:var(--panel);border:1px solid var(--line)}
+.start-foot p{color:var(--muted);font-size:15.5px;max-width:60ch}
+.start-foot p b{color:var(--text);font-weight:600}
+.start-foot .ctas{display:flex;flex-wrap:wrap;gap:10px}
 
-/* ---------- how it works ---------- */
-.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:var(--rule) solid var(--white);}
-@media(max-width:820px){.flow{grid-template-columns:1fr 1fr;}}
-@media(max-width:480px){.flow{grid-template-columns:1fr;}}
-.step{padding:28px 22px;border-right:var(--rule) solid var(--white);position:relative;}
-.flow .step:last-child{border-right:none;}
-@media(max-width:820px){
-  .flow .step:nth-child(2n){border-right:none;}
-  .flow .step:nth-child(1),.flow .step:nth-child(2){border-bottom:var(--rule) solid var(--white);}
-}
-@media(max-width:480px){
-  .flow .step{border-right:none;border-bottom:var(--rule) solid var(--white);}
-  .flow .step:last-child{border-bottom:none;}
-}
-.step .n{font-family:var(--mono);font-size:12px;color:var(--red);letter-spacing:0.1em;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-.step .n .ico{width:20px;height:20px;color:var(--white);}
-.step h3{font-size:15px;margin-bottom:8px;}
-.step p{font-size:13px;color:var(--muted);}
+/* ---------- faq ---------- */
+.faq{border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:18px;padding:20px 0;font:700 clamp(20px,2.2vw,26px)/1.15 var(--disp);text-transform:uppercase;letter-spacing:.02em}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font:500 24px/1 var(--mono);color:var(--accent);flex:none}
+.faq details[open] summary::after{content:"\2212"}
+.faq .ans{padding:0 0 22px;color:var(--muted);max-width:72ch}
+.faq .ans strong{color:var(--text);font-weight:600}
 
-/* ---------- final CTA ---------- */
-.final{padding:96px 0;border-bottom:var(--rule) solid var(--white);text-align:center;}
-.final h2{font-size:clamp(34px,6vw,64px);text-transform:uppercase;line-height:0.98;margin-bottom:18px;}
-.final p{color:var(--muted);max-width:46ch;margin:0 auto 30px;font-size:16px;}
-.final .hero-ctas{justify-content:center;}
+/* ---------- follow + credits ---------- */
+.follow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.follow a{background:var(--ground);padding:clamp(22px,3vw,36px);text-decoration:none;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;transition:background .2s var(--ease)}
+.follow a:hover{background:var(--panel)}
+.follow b{display:block;font:800 clamp(32px,4.4vw,56px)/1 var(--disp);text-transform:uppercase;margin-top:8px;overflow-wrap:anywhere}
+.follow .arrow{font:500 26px var(--mono);color:var(--accent)}
+.credits{margin-top:clamp(48px,6vw,80px)}
+.credits summary{cursor:pointer;display:inline-flex;align-items:center;gap:10px;font:700 16px var(--disp);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding:12px 0;list-style:none}
+.credits summary::-webkit-details-marker{display:none}
+.credits summary::before{content:"+";color:var(--accent);font:500 18px var(--mono)}
+.credits[open] summary::before{content:"\2212"}
+.credits summary:hover{color:var(--text)}
+.credit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 36px;padding-top:18px}
+.credit-grid h3{font:600 12px var(--disp);letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.credit-grid p{color:var(--muted);font-size:14.5px}
+.credits .intro{color:var(--muted);font-size:15px;max-width:70ch;margin-top:6px}
 
 /* ---------- footer ---------- */
-footer{padding:56px 0 40px;}
-.foot-top{display:flex;justify-content:space-between;align-items:flex-start;gap:32px;flex-wrap:wrap;margin-bottom:40px;}
-.foot-brand{max-width:34ch;}
-.foot-brand .brand{margin-bottom:14px;}
-.foot-brand p{color:var(--muted);font-size:14px;}
-.foot-links{display:flex;gap:56px;flex-wrap:wrap;}
-.foot-col h3{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.14em;color:var(--muted);margin-bottom:14px;font-weight:600;line-height:1.05;}
-.foot-col a{display:block;color:var(--soft);text-decoration:none;font-size:14px;margin-bottom:9px;transition:color .15s;}
-.foot-col a:hover{color:var(--white);}
-.foot-bottom{border-top:var(--rule) solid var(--white);padding-top:22px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
-.foot-bottom .tag{font-size:11px;}
-.project-note{font-size:11px;color:var(--dim);font-family:var(--mono);letter-spacing:0.04em;}
+.site-foot{border-top:1px solid var(--line);padding:48px 0 40px;background:#0a0c0e}
+.foot-grid{display:grid;grid-template-columns:minmax(0,2fr) repeat(2,minmax(0,1fr));gap:32px;padding-bottom:36px;border-bottom:1px solid var(--line)}
+.foot-grid p{color:var(--muted);font-size:15px;margin-top:12px;max-width:40ch}
+.foot-grid h2{font:600 12px var(--disp);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.foot-grid ul{list-style:none}
+.foot-grid ul a{display:inline-block;padding:7px 0;text-decoration:none;color:var(--text);font-size:15px}
+.foot-grid ul a:hover{color:var(--accent)}
+.legal{margin-top:20px;font:400 12px/1.65 var(--mono);color:var(--muted);max-width:110ch}
 
-.divider-lbl{
-  text-align:center;font-family:var(--mono);font-size:10px;
-  letter-spacing:0.3em;text-transform:uppercase;color:var(--dim);
-  padding:14px 0;
+/* ---------- responsive ---------- */
+@media (max-width:980px){
+  .two,.settings,.games{grid-template-columns:minmax(0,1fr)}
+  .pages{grid-template-columns:minmax(0,1fr)}
+  .metrics{grid-template-columns:minmax(0,1fr)}
+  .steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 0}
+  .voice-grid{grid-template-columns:minmax(0,1fr)}
+  .credit-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .foot-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .foot-grid>div:first-child{grid-column:1/-1}
+}
+@media (max-width:560px){
+  body{font-size:16px}
+  .split,.follow,.set-list{grid-template-columns:minmax(0,1fr)}
+  .steps{grid-template-columns:minmax(0,1fr)}
+  .steps li{padding-right:0}
+  .credit-grid{grid-template-columns:minmax(0,1fr)}
+  .game li{grid-template-columns:minmax(0,1fr);gap:2px}
+  .hero-ctas .btn{flex:1 1 100%}
+  .start-foot .ctas,.start-foot .ctas>*{width:100%}
+  .states{grid-template-columns:minmax(0,1fr)}
 }
 
-/* ---------- scroll reveal ---------- */
-.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s var(--ease-out), transform .6s var(--ease-out);}
-.reveal.in{opacity:1;transform:none;}
-.reveal.d1{transition-delay:.06s}
-.reveal.d2{transition-delay:.12s}
-.reveal.d3{transition-delay:.18s}
-/* The hero is already in view on load — reveal-on-scroll there only fades in
-   the Largest Contentful Paint element (~+0.8s to LCP). Render it immediately. */
-.hero .reveal{opacity:1;transform:none;transition:none;}
-
-/* ---------- model freedom ---------- */
-.lanes{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:var(--rule) solid var(--white);}
-@media(max-width:820px){.lanes{grid-template-columns:1fr;}}
-.lane{padding:28px 26px;border-right:var(--rule) solid var(--white);}
-.lanes .lane:last-child{border-right:none;}
-@media(max-width:820px){
-  .lane{border-right:none;border-bottom:var(--rule) solid var(--white);}
-  .lanes .lane:last-child{border-bottom:none;}
-}
-.lane-k{font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--red);display:block;margin-bottom:12px;}
-.lane h3{font-size:18px;margin-bottom:8px;}
-.lane p{font-size:13.5px;color:var(--muted);margin-bottom:16px;line-height:1.5;}
-@media(max-width:600px){.lane{padding:24px 22px;}}
-
-/* ---------- mobile tightening ---------- */
-@media(max-width:600px){
-  .wrap{padding:0 18px;}
-  .hero{padding:36px 0 36px;}
-  .hero h1{font-size:clamp(38px,12vw,60px);}
-  .hero-ctas .btn,.final .btn,.hero-ctas .btn.soon{width:100%;justify-content:center;}
-  .sec,.byok{padding:52px 0;}
-  .sec-head{margin-bottom:32px;}
-  .telebar{margin-top:32px;}
-  .tele{padding:13px 14px;}
-  .tele .v{font-size:19px;}
-  .byok-cell{padding:26px 22px;min-width:0;overflow-wrap:anywhere;}
-  .feat{padding:24px 22px;}
-  .rt-grid,.games-grid,.dev-grid{gap:16px;}
-  .final{padding:64px 0;}
-  .foot-links{gap:32px;}
-}
-@media(max-width:380px){
-  .telebar{grid-template-columns:1fr;}
-  .telebar .tele{border-right:none;border-bottom:var(--rule) solid var(--hair);}
-  .telebar .tele:last-child{border-bottom:none;}
-}
-
-/* ---------- reduced motion: honour the user ---------- */
-@media (prefers-reduced-motion: reduce){
-  *{animation:none!important;transition:none!important;}
-  html{scroll-behavior:auto;}
-  .reveal{opacity:1!important;transform:none!important;}
-  .msg{opacity:1!important;transform:none!important;}
+/* ---------- motion ---------- */
+.js .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.js .reveal.in{opacity:1;transform:none}
+.js .metrics:not(.in) .mbar .fill{transform:scaleX(0)}
+@keyframes blink{50%{opacity:.25}}
+.live i{animation:blink 1.6s steps(1) infinite}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .js .reveal{opacity:1;transform:none}
+  .js .metrics:not(.in) .mbar .fill{transform:none}
 }
 </style>
-<noscript><style>.reveal{opacity:1;transform:none;}</style></noscript>
+<script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 
-<!-- background texture -->
-<div class="bg-fx traces" aria-hidden="true">
-  <svg viewBox="0 0 1600 900" preserveAspectRatio="none">
-    <path class="trace-path" d="M-100,720 C200,700 340,420 560,430 C760,440 820,690 1040,700 C1260,710 1360,300 1700,340" />
-    <path class="trace-path red" d="M-100,540 C260,560 380,240 620,250 C900,262 980,520 1240,500 C1440,485 1520,200 1700,220" />
-    <path class="trace-path" d="M-100,300 C240,320 420,120 700,140 C980,160 1080,360 1360,340 C1520,330 1600,160 1700,150" />
-  </svg>
-</div>
-<div class="bg-fx scanlines" aria-hidden="true"></div>
-<div class="bg-fx grain" aria-hidden="true"></div>
-
-<!-- ============ HEADER ============ -->
-<header id="top">
-  <div class="wrap nav">
-    <a class="brand" href="#top" aria-label="airaceGP home">
-      <span class="ring">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="airaceGP helmet">
-          <circle cx="256" cy="256" r="256" fill="#000000"/>
-          <g fill="none" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M146,410 L420,410 C452,410 458,380 452,345 C448,300 446,240 419,205 C400,150 320,96 228,98 C150,100 78,160 70,235 C64,300 90,410 146,410 Z"/>
-            <path d="M419,205 C360,200 250,200 224,250 C214,275 240,300 300,305 L452,345"/>
-          </g>
-        </svg>
-      </span>
-      <span class="name"><b>airaceGP</b></span>
+<header class="site-head">
+  <nav class="wrap nav" aria-label="Main">
+    <a class="brand" href="#top" aria-label="airaceGP, back to top">
+      <svg viewBox="0 0 512 512" aria-hidden="true" focusable="false">
+        <circle cx="256" cy="256" r="246" fill="#15191e" stroke="#e8eaed" stroke-width="14"/>
+        <g fill="none" stroke="#e8eaed" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M146,410 L420,410 C452,410 458,380 452,345 C448,300 446,240 419,205 C400,150 320,96 228,98 C150,100 78,160 70,235 C64,300 90,410 146,410 Z"/>
+          <path d="M419,205 C360,200 250,200 224,250 C214,275 240,300 300,305 L452,345" stroke="#ff5a3c"/>
+        </g>
+      </svg>
+      <span class="brand-name">airace<span>GP</span></span>
     </a>
-
-    <nav class="nav-links" aria-label="Primary">
-      <a class="navlink" href="#features">Features</a>
-      <a class="navlink" href="#models">Models</a>
-      <a class="navlink" href="#race-support">Race support</a>
-      <a class="navlink" href="#games">Games</a>
-      <a class="navlink" href="#free">Free</a>
-      <a class="navlink" href="#credits">Credits</a>
-    </nav>
-
-    <div class="nav-cta">
-      <a class="btn small" href="https://www.youtube.com/@pmech-yt" target="_blank" rel="noopener" aria-label="airaceGP on YouTube">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.3 3.6-6.3 3.6Z"/></svg>
-        <span>YouTube</span>
-      </a>
-      <a class="btn small" href="https://github.com/nothing-gpu" target="_blank" rel="noopener" aria-label="airaceGP on GitHub">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.3-.5-1.5.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg>
-        <span>GitHub</span>
-      </a>
-    </div>
-  </div>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#analysis">Analysis</a></li>
+      <li><a href="#models">Your AI</a></li>
+      <li><a href="#app">The app</a></li>
+      <li><a href="#languages">Voice</a></li>
+      <li><a href="#start">Start</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="https://docs.airacegp.com/">Docs</a></li>
+    </ul>
+    <div class="nav-cta"><a class="btn" href="#start">Get started</a></div>
+  </nav>
 </header>
 
-<main>
-
-<!-- ============ HERO ============ -->
-<section class="hero">
-  <div class="wrap">
-    <div class="hero-grid">
-      <div class="hero-left">
-        <h1 class="reveal d1">Your ACC<br/>race engineer.</h1>
-        <p class="lead reveal d1">airaceGP turns your Assetto Corsa Competizione telemetry into <b style="color:var(--white)">spoken race-engineer calls</b>. Ask about fuel, tyres or your next stop without leaving the race.</p>
-        <p class="sub reveal d2">Focused on GT racing: short radio replies, session memory and fewer unnecessary calls. Keep your eyes on the track and ask your engineer.</p>
-
-        <div class="hero-ctas reveal d2">
-          <a class="btn" href="https://github.com/nothing-gpu" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.3-.5-1.5.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg>
-            Follow airaceGP
-          </a>
-          <a class="btn" href="https://www.youtube.com/@pmech-yt" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.3 3.6-6.3 3.6Z"/></svg>
-            Watch on YouTube
-          </a>
-          <span class="btn soon" aria-disabled="true">Download app <span class="lbl-soon">Coming soon</span></span>
-        </div>
-
-        <div class="hero-meta reveal d3">
-          <span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> <b>Coming soon</b></span>
-          <span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg> Focused on <b>ACC</b></span>
-          <span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> <b>Voice Q&amp;A</b></span>
-          <span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.9 6 4 9-.1 3-1.5 6.3-4 9-2.5-2.7-3.9-6-4-9 .1-3 1.5-6.3 4-9Z"/></svg> <b>9</b> languages</span>
-        </div>
+<main id="main">
+<!-- =============== HERO =============== -->
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="label accent">AI race engineer · ACC · F1 25</p>
+      <h1 id="hero-title">Your engineer <span class="l2">is on the radio.</span></h1>
+      <p class="lead">airaceGP reads your live telemetry, works out what matters right now and tells you over the radio. <strong>Short calls, real numbers, answers when you ask.</strong> Built for Assetto Corsa Competizione, with F1 25 support.</p>
+      <div class="hero-ctas">
+        <a class="btn primary" href="#start">Get started</a>
+        <a class="btn" href="https://www.youtube.com/@pmech-yt">Watch on YouTube</a>
       </div>
+      <div class="hero-meta">
+        <div><span class="label">Games</span><b>ACC · F1 25</b></div>
+        <div><span class="label">Your AI</span><b>7 provider types</b></div>
+        <div><span class="label">Languages</span><b>9</b></div>
+      </div>
+    </div>
 
-      <!-- radio panel -->
-      <div class="radio reveal d2" aria-label="Example radio exchange">
-        <div class="radio-head">
-          <span class="lbl">Illustrative radio exchange</span>
-          <span class="t mono tnum">ACC · GT3</span>
+    <figure class="reveal">
+      <div class="pw" role="img" aria-label="Illustration of the airaceGP live dashboard with example values. The headline reads: McLaren ahead, 1.4, closing 0.3 a lap. The gap list shows a McLaren in P6 1.4 seconds ahead and closing, you in P7 in a Ferrari, a Porsche 2.1 seconds behind and a lapped car ahead. Fuel is 3.1 laps over what the flag needs. Rear-right tyre pressure is above the window.">
+        <div class="pw-top">
+          <span class="brand-name">airace<span>GP</span></span>
+          <div class="pw-tabs"><span class="on">DASHBOARD</span><span>ANALYSIS</span><span>CORNERS</span></div>
+          <span class="sp"></span>
+          <div class="pw-kv"><span class="label">Circuit</span><b>Spa</b></div>
+          <div class="pw-kv"><span class="label">Left</span><b data-clock>38:12</b></div>
+          <span class="live"><i></i>LIVE</span>
         </div>
-        <div class="radio-body">
-          <div class="msg drv">
-            <span class="who">Driver</span>
-            <span class="txt"><span class="q">“Enough fuel to the flag?”</span></span>
+        <div class="pw-head">
+          <span class="label accent">Headline</span>
+          <span class="say">McLaren ahead, 1.4, closing 0.3 a lap.</span>
+        </div>
+        <div class="pw-body">
+          <div class="pw-col">
+            <div class="pw-block">
+              <div class="label"><span>Around you</span><span>Gap · trend</span></div>
+              <ol class="tower">
+                <li><span class="p">P6</span><span class="car">McLaren 720S GT3 Evo</span><span class="g">+1.4<span class="t c">closing 0.3</span></span></li>
+                <li class="me"><span class="p">P7</span><span class="car">You · Ferrari 296 GT3</span><span class="g">YOU</span></li>
+                <li><span class="p">P8</span><span class="car">Porsche 911 GT3 R</span><span class="g">−2.1<span class="t">holding</span></span></li>
+                <li><span class="p">LAP</span><span class="car">Lapped · BMW M4 GT4</span><span class="g">+3.0<span class="t">ahead</span></span></li>
+              </ol>
+            </div>
+            <div class="pw-block">
+              <div class="label"><span>Fuel vs flag</span><span>Margin</span></div>
+              <div class="fuel-row"><b>+3.1</b><small>laps over · 41.8 L on board</small></div>
+              <div class="bar"><i style="width:86%"></i><span class="flag" style="left:78%"></span></div>
+            </div>
           </div>
-          <div class="msg eng">
-            <span class="who">Engineer</span>
-            <span class="txt">Not on this tank. We need fuel at the stop.</span>
+          <div class="pw-col">
+            <div class="pw-block">
+              <div class="label"><span>Pressures</span><span>psi</span></div>
+              <div class="tyres">
+                <div class="tyre"><span>FL</span><b>26.6</b></div>
+                <div class="tyre"><span>FR</span><b>26.8</b></div>
+                <div class="tyre"><span>RL</span><b>26.5</b></div>
+                <div class="tyre hi"><span>RR</span><b>27.4</b></div>
+              </div>
+              <div class="win">window 26.0–27.0 · RR high</div>
+            </div>
+            <div class="pw-block">
+              <div class="label"><span>State</span></div>
+              <div class="states">
+                <div><span>Damage</span>none</div>
+                <div><span>Weather</span>dry</div>
+                <div><span>Pit lane</span>open</div>
+                <div><span>Stop owed</span>1</div>
+              </div>
+            </div>
           </div>
-          <div class="msg drv">
-            <span class="who">Driver</span>
-            <span class="txt"><span class="q">“Do I still owe a stop?”</span></span>
-          </div>
-          <div class="msg eng">
-            <span class="who">Engineer</span>
-            <span class="txt">Affirmative. One mandatory stop remaining.</span>
-          </div>
         </div>
-        <div class="radio-foot">
-          <span class="tnum">SHARED MEMORY</span>
-          <span class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></span>
-          <span>TTS · PIPER</span>
+        <div class="pw-radio">
+          <span class="who">Driver</span><span>“Gap ahead?”</span>
+          <span class="who e">Eng</span><span>McLaren ahead, 1.4, closing 0.3 a lap.</span>
         </div>
       </div>
-    </div>
-
-    <!-- Static ACC sample; not connected to a running session. -->
-    <div class="telebar reveal d3" aria-label="Illustrative ACC telemetry, not live data">
-      <div class="tele"><span class="k">Speed</span><span class="v tnum">248 <small>KM/H</small></span></div>
-      <div class="tele"><span class="k">Gear</span><span class="v tnum">6</span></div>
-      <div class="tele"><span class="k">Fuel</span><span class="v tnum">9.4 <small>LAPS</small></span></div>
-      <div class="tele"><span class="k">Tyres</span><span class="v tnum">DRY <small>SET 2</small></span></div>
-      <div class="tele"><span class="k">Pit stops owed</span><span class="v tnum">1</span></div>
-    </div>
+      <figcaption class="pw-cap"><span>Illustration of the live dashboard</span><span>Example values, not a real session</span></figcaption>
+    </figure>
   </div>
 </section>
 
-<!-- ============ FREE / BYOK ============ -->
-<section class="byok" id="free">
+<!-- =============== RADIO MOMENT =============== -->
+<section class="radio reveal" aria-labelledby="radio-title">
   <div class="wrap">
-    <div class="byok-grid reveal d1">
-      <div class="byok-cell">
-        <h2 class="big">No app subscription.</h2>
-        <p>Your engineer runs on your PC, with no app subscription. Public downloads are coming soon.</p>
-        <div class="free-badges" style="margin-top:22px;">
-          <span class="pill-static">No app fee</span>
-          <span class="pill-static">Bring your own provider</span>
-          <span class="pill-static">Local app</span>
+    <h2 class="label" id="radio-title">On the radio · example</h2>
+    <p class="radio-q"><span>Driver</span>“Where's the car ahead?”</p>
+    <p class="radio-a"><span class="who">Engineer</span>McLaren ahead, <span class="n">1.4</span>, closing <span class="n">0.3</span> a lap.</p>
+    <div class="wave" aria-hidden="true" data-wave></div>
+    <p class="radio-note">That is the whole call. Car make, the gap, the trend. No pep talk, no guessing. Ask again in two laps and you get the new number.</p>
+  </div>
+</section>
+
+<!-- =============== ANALYSIS =============== -->
+<section class="sec" id="analysis" aria-labelledby="analysis-title">
+  <div class="wrap">
+    <div class="two">
+      <div class="reveal">
+        <p class="sec-num"><b>01</b> / Analysis</p>
+        <h2 class="h-sec" id="analysis-title">The app does the maths. <em>The AI does the talking.</em></h2>
+        <p class="lead">airaceGP works out the race state itself, from the telemetry. The model gets a short, finished picture and only has to phrase it.</p>
+        <div class="split">
+          <div><p class="label">App</p><p><strong>Computes</strong> fuel, pressures, gaps, trends and what to say first.</p></div>
+          <div><p class="label accent">AI</p><p><strong>Phrases</strong> it like an engineer, in one short call.</p></div>
         </div>
       </div>
-      <div class="byok-cell">
-        <p class="tag" style="color:var(--red);font-size:11px;">AI provider costs</p>
-        <h2 class="big" style="margin-top:10px;">Bring your own key.</h2>
-        <p>Connect <b style="color:var(--white)">your own provider credentials</b>, or use local Ollama with suitable hardware. Cloud requests send session context to your chosen provider and may incur usage charges.</p>
-        <p class="fine">Your keys, your models, your data.</p>
-        <div class="provider-row">
-          <span class="prov"><span class="d">▸</span> OpenRouter</span>
-          <span class="prov"><span class="d">▸</span> Groq</span>
-          <span class="prov"><span class="d">▸</span> Anthropic</span>
-          <span class="prov"><span class="d">▸</span> Ollama <span class="tag" style="font-size:9px;">local · no key</span></span>
-          <span class="prov"><span class="d">▸</span> Custom OpenAI-compatible endpoint</span>
+      <ol class="checklist reveal">
+        <li><span class="i">HL</span><div><b>The headline</b><p>What matters right now, so the important call goes first.</p></div></li>
+        <li><span class="i">FU</span><div><b>Fuel against the flag</b><p>Enough to the end, or how much short.</p></div></li>
+        <li><span class="i">TY</span><div><b>Pressures against the window</b><p>Each corner labelled. Which one is out, and which way.</p></div></li>
+        <li><span class="i">GP</span><div><b>Cars ahead and behind</b><p>By car make, with the gap and whether it is closing.</p></div></li>
+        <li><span class="i">TR</span><div><b>Lapped traffic</b><p>Slower cars you are about to meet.</p></div></li>
+        <li><span class="i">ST</span><div><b>Damage, weather, pit lane</b><p>Called when they change.</p></div></li>
+      </ol>
+    </div>
+
+    <div class="metrics" data-metrics>
+      <div class="metric">
+        <p class="label">Accuracy · 320 scenarios</p>
+        <p class="big">93–94<small>%</small></p>
+        <p class="from">was 76%</p>
+        <div class="mbars" aria-hidden="true">
+          <div class="mbar"><span>before</span><div class="track"><div class="fill" style="--w:76%"></div></div></div>
+          <div class="mbar now"><span>now</span><div class="track"><div class="fill" style="--w:93.5%"></div></div></div>
+        </div>
+      </div>
+      <div class="metric">
+        <p class="label">Input tokens per call</p>
+        <p class="big">~3,500</p>
+        <p class="from">was ~9,200</p>
+        <div class="mbars" aria-hidden="true">
+          <div class="mbar"><span>before</span><div class="track"><div class="fill" style="--w:100%"></div></div></div>
+          <div class="mbar now"><span>now</span><div class="track"><div class="fill" style="--w:38%"></div></div></div>
+        </div>
+      </div>
+      <div class="metric">
+        <p class="label">Output tokens per call</p>
+        <p class="big">~340</p>
+        <p class="from">was ~1,170</p>
+        <div class="mbars" aria-hidden="true">
+          <div class="mbar"><span>before</span><div class="track"><div class="fill" style="--w:100%"></div></div></div>
+          <div class="mbar now"><span>now</span><div class="track"><div class="fill" style="--w:29%"></div></div></div>
         </div>
       </div>
     </div>
+    <p class="caveat">In our internal tests: a 320-scenario suite, scored on what the driver actually hears. Before, the AI read raw telemetry and worked it out itself. Now the app does the analysis and the AI phrases it. Same or better answers for about a third of the tokens. Your results depend on the model you choose.</p>
   </div>
 </section>
 
-<!-- ============ HOW IT WORKS ============ -->
-<section class="sec" id="how">
+<!-- =============== MODEL CHAIN =============== -->
+<section class="sec" id="models" aria-labelledby="models-title">
   <div class="wrap">
     <div class="sec-head reveal">
-      <h2>Telemetry in. Radio out.</h2>
-      <p>Four moving parts, one calm voice in your ear.</p>
-    </div>
-    <div class="flow reveal d1">
-      <div class="step">
-        <span class="n"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12a7 7 0 0 1 14 0"/><path d="M2 12h2M20 12h2M12 19v3"/><rect x="9" y="12" width="6" height="8" rx="3"/></svg> 01</span>
-        <h3>Listen</h3>
-        <p>Connect to ACC on your Windows PC. Your car and session telemetry gives the engineer context for fuel, tyres, weather and mandatory stops.</p>
-      </div>
-      <div class="step">
-        <span class="n"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h11a2 2 0 0 1 2 2v16l-3-2-3 2-3-2-3 2V5a2 2 0 0 1 2-2Z"/><path d="M9 8h6M9 12h4"/></svg> 02</span>
-        <h3>Think</h3>
-        <p>A larger model reviews telemetry periodically and updates session memory: fuel, tyres, weather, damage and the pit plan.</p>
-      </div>
-      <div class="step">
-        <span class="n"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a4 4 0 0 1 4 4 3.5 3.5 0 0 1 1 6.8V15a3 3 0 0 1-6 0 3 3 0 0 1-6 0v-1.2A3.5 3.5 0 0 1 6 7a4 4 0 0 1 4-4Z"/><path d="M12 3v18"/></svg> 03</span>
-        <h3>Answer</h3>
-        <p>A smaller model answers your question from the current memory without waiting for the next full analysis. Response time depends on your model and provider.</p>
-      </div>
-      <div class="step">
-        <span class="n"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h3l5 4V5L7 9H4Z"/><path d="M16 9a3 3 0 0 1 0 6M18.5 7a6 6 0 0 1 0 10"/></svg> 04</span>
-        <h3>Speak</h3>
-        <p>Piper speaks the reply. Telemetry-driven calls are suppressed while ACC is paused or in replay; you can still ask the engineer a question.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ MODEL FREEDOM ============ -->
-<section class="sec" id="models">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <h2>Choose your models.</h2>
-      <p>Configure the background analysis and fast replies separately. Use a cloud provider or local Ollama, with Piper for speech.</p>
+      <p class="sec-num"><b>02</b> / Your AI</p>
+      <h2 class="h-sec" id="models-title">A model chain <em>you</em> control.</h2>
+      <p class="lead">Pick which providers the engineer asks, in what order, and whether it moves to the next one when a call fails. No single provider is required. Onboarding builds the chain from the keys you enter.</p>
     </div>
 
-    <div class="lanes reveal d1">
-      <div class="lane">
-        <span class="lane-k">Analysis</span>
-        <h3>Background race analysis</h3>
-        <p>Keeps track of the race, from fuel and tyre conditions to your pit plan. Choose the model that fits your setup.</p>
-      </div>
-      <div class="lane">
-        <span class="lane-k">Replies</span>
-        <h3>Driver questions and urgent replies</h3>
-        <p>Answers from your session context without waiting for the next full analysis. Get short, focused replies to your questions.</p>
-      </div>
-      <div class="lane">
-        <span class="lane-k">Voice</span>
-        <h3>How it sounds</h3>
-        <p>Piper generates speech locally. Choose the voice and output device in the app settings.</p>
-      </div>
-    </div>
+    <figure class="chain reveal">
+      <figcaption class="chain-top">
+        <span class="label">Example chain · race analysis</span>
+        <span class="toggle"><i aria-hidden="true"></i>Fall back on failure: on</span>
+      </figcaption>
+      <ol class="chain-row">
+        <li class="node first"><span class="ord">01</span><p class="prov">Ollama Cloud</p><p class="mdl">gpt-oss:120b · free tier</p><span class="state"><i></i>Asked first</span></li>
+        <li class="node"><span class="ord">02</span><p class="prov">Groq</p><p class="mdl">your key</p><span class="state"><i></i>If 01 fails</span></li>
+        <li class="node"><span class="ord">03</span><p class="prov">Ollama · local</p><p class="mdl">on your PC · no key</p><span class="state"><i></i>If 02 fails</span></li>
+      </ol>
+      <div class="chain-foot"><span>Keys: <b>.env on your PC</b></span><span>Order: <b>yours</b></span><span>Fallback: <b>on or off</b></span></div>
+    </figure>
 
-    <div class="udp-note reveal d1" style="margin-top:26px;">
-      <span>Provider choice, with trade-offs.</span>
-      <span style="color:var(--muted);">Custom <b style="color:var(--soft)">OpenAI-compatible endpoints</b> are configurable. Speed and answer quality vary by model and hardware.</span>
+    <ul class="providers reveal" aria-label="Supported providers">
+      <li>Ollama Cloud<small>free tier · gpt-oss:120b, gemma4:31b</small></li>
+      <li>Groq</li>
+      <li>Google Gemini</li>
+      <li>OpenRouter</li>
+      <li>Anthropic</li>
+      <li>OpenAI-compatible<small>any endpoint</small></li>
+      <li>Ollama local<small>on your PC</small></li>
+    </ul>
+
+    <div class="qa reveal">
+      <p class="score">80<span>/80</span></p>
+      <p><strong>Driver questions go to the model that answered them best.</strong> gemma4:31b got 80 of 80 right across three unseen test sets, in about 1.5–3 seconds. In our internal tests.</p>
     </div>
   </div>
 </section>
 
-<!-- ============ RACE SUPPORT ============ -->
-<section class="sec" id="race-support">
+<!-- =============== THE APP =============== -->
+<section class="sec" id="app" aria-labelledby="app-title">
   <div class="wrap">
     <div class="sec-head reveal">
-      <h2>Stay focused on the race.</h2>
-      <p>Ask what you need to know. Hear it over the radio. Keep driving.</p>
+      <p class="sec-num"><b>03</b> / The app</p>
+      <h2 class="h-sec" id="app-title">A pit wall on your desk. <em>And your phone.</em></h2>
+      <p class="lead">A Windows desktop app with a dark timing-screen dashboard. Open it on a phone over your LAN and keep it next to the wheel.</p>
     </div>
-    <div class="rt-grid">
-      <div class="rt-card reveal">
-        <span class="badge">Fuel</span>
-        <h3>Will this tank reach the flag?</h3>
-        <p>Ask about your fuel range and get an answer that accounts for the fuel on board and the race ahead.</p>
+
+    <div class="pages">
+      <article class="page reveal">
+        <p class="label accent">Live</p>
+        <h3>Dashboard</h3>
+        <p>The headline, the cars around you, fuel, pressures and the radio log, updating as you drive.</p>
+        <div class="fig" aria-hidden="true">
+          <svg viewBox="0 0 320 200" fill="none">
+            <rect x="0" y="0" width="320" height="30" fill="#1b2027"/>
+            <rect x="10" y="10" width="120" height="10" fill="#ff5a3c"/>
+            <g fill="#1b2027"><rect x="0" y="42" width="190" height="24"/><rect x="0" y="72" width="190" height="24"/><rect x="0" y="102" width="190" height="24"/><rect x="0" y="132" width="190" height="24"/></g>
+            <rect x="0.5" y="72.5" width="189" height="23" stroke="#ff5a3c"/>
+            <g fill="#3a424c"><rect x="10" y="50" width="90" height="8"/><rect x="10" y="80" width="80" height="8"/><rect x="10" y="110" width="96" height="8"/><rect x="10" y="140" width="70" height="8"/></g>
+            <g fill="#1b2027"><rect x="204" y="42" width="55" height="40"/><rect x="265" y="42" width="55" height="40"/><rect x="204" y="88" width="55" height="40"/><rect x="265" y="88" width="55" height="40"/></g>
+            <rect x="265" y="88" width="3" height="40" fill="#ff5a3c"/>
+            <rect x="0" y="176" width="320" height="4" fill="#2a3038"/><rect x="0" y="176" width="250" height="4" fill="#e8eaed"/><rect x="226" y="170" width="3" height="16" fill="#ff5a3c"/>
+          </svg>
+        </div>
+      </article>
+      <article class="page reveal">
+        <p class="label accent">After the session</p>
+        <h3>Analysis</h3>
+        <p>Racing line, lap times, telemetry traces and sector trends against your best.</p>
+        <div class="fig" aria-hidden="true">
+          <svg viewBox="0 0 320 200" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M40 150 C20 120 30 70 70 60 L150 40 C190 30 230 36 250 60 C270 84 300 96 290 130 C282 158 240 160 210 150 L120 150 C100 150 90 170 70 170 C55 170 48 162 40 150Z" stroke="#2a3038" stroke-width="16"/>
+            <path d="M40 150 C20 120 30 70 70 60 L150 40 C190 30 230 36 250 60 C270 84 300 96 290 130 C282 158 240 160 210 150 L120 150 C100 150 90 170 70 170 C55 170 48 162 40 150Z" stroke="#e8eaed" stroke-width="2"/>
+            <path d="M150 40 C190 30 230 36 250 60 C270 84 300 96 290 130" stroke="#ff5a3c" stroke-width="3"/>
+            <circle cx="150" cy="40" r="4" fill="#ff5a3c"/>
+          </svg>
+        </div>
+      </article>
+      <article class="page reveal">
+        <p class="label accent">Corner by corner</p>
+        <h3>Corners</h3>
+        <p>A page for the corners of the lap, to see where the time goes.</p>
+        <div class="fig" aria-hidden="true">
+          <svg viewBox="0 0 320 200" fill="none">
+            <path d="M0 160 H320 M0 105 H320 M0 50 H320" stroke="#2a3038"/>
+            <path d="M0 40 L60 40 C80 40 90 150 120 150 C150 150 160 60 190 55 L320 50" stroke="#9aa3ad" stroke-width="2"/>
+            <path d="M0 40 L66 40 C86 40 94 138 124 138 C152 138 164 58 194 52 L320 46" stroke="#ff5a3c" stroke-width="2.5"/>
+            <path d="M122 138 V188" stroke="#9aa3ad" stroke-dasharray="3 4"/>
+          </svg>
+        </div>
+      </article>
+    </div>
+
+    <div class="settings reveal">
+      <div>
+        <h3>Tune the engineer.</h3>
+        <p>Talkative or quiet, short calls or longer ones. Set it once in settings.</p>
       </div>
-      <div class="rt-card reveal d1">
-        <span class="badge">Pit stops</span>
-        <h3>Keep your next stop in mind.</h3>
-        <p>Mandatory-stop reminders help you keep track of what is still owed, while pit-call filtering reduces unnecessary calls to box.</p>
-      </div>
-      <div class="rt-card reveal d2">
-        <span class="badge">Coaching · Beta</span>
-        <h3>Find time, sector by sector.</h3>
-        <p>Optional sector coaching compares your pace with your own best sectors in the session. Turn it on when you want feedback.</p>
-      </div>
+      <ul class="set-list">
+        <li>Chattiness<span>how often it talks</span></li>
+        <li>Call length<span>how long it talks</span></li>
+        <li>Tick interval<span>time between checks</span></li>
+        <li>Fuel chatter<span>fuel calls</span></li>
+        <li>Dash readout<span>dash values</span></li>
+        <li>Live timing<span>ACC broadcast</span></li>
+      </ul>
     </div>
   </div>
 </section>
 
-<!-- ============ FEATURES ============ -->
-<section class="sec" id="features">
+<!-- =============== GAMES =============== -->
+<section class="sec" id="games" aria-labelledby="games-title">
   <div class="wrap">
     <div class="sec-head reveal">
-      <h2>What the ACC engineer does.</h2>
-      <p>Fuel, tyres, pit stops and radio replies, all in one place.</p>
+      <p class="sec-num"><b>04</b> / Games</p>
+      <h2 class="h-sec" id="games-title">ACC first. <em>F1 25 too.</em></h2>
     </div>
-    <div class="features reveal d1">
-      <div class="feat"><span class="num mono">01</span><h3>Voice radio and replies</h3><p>Piper speech and Whisper voice input. Ask about fuel, tyres, penalties or mandatory stops while the analysis model works in the background.</p></div>
-      <div class="feat"><span class="num mono">02</span><h3>Fuel and mandatory stops</h3><p>Direct answers about fuel on the current tank, plus staged mandatory-stop deadline warnings. Pit-call filtering helps reduce unsupported calls to box.</p></div>
-      <div class="feat"><span class="num mono">03</span><h3>Spin detection</h3><p>Tracks spin incidents and repeat patterns. Traction-aid suggestions are gated on telemetry evidence, with unsupported suggestions filtered before speech.</p></div>
-      <div class="feat"><span class="num mono">04</span><h3>Session memory</h3><p>Background analysis maintains fuel, tyre, weather, damage and pit-plan context for the smaller reply model.</p></div>
-      <div class="feat"><span class="num mono">05</span><h3>Tyre-set tracking</h3><p>Tracks dry and wet sets used during the session. It does not claim how many sets remain: event allocations are not supplied by telemetry.</p></div>
-      <div class="feat"><span class="num mono">06</span><h3>Dashboard and controls</h3><p>Car telemetry, lap and sector timing, radio history and engineer settings in the local app. Optional LAN access puts the dashboard on a second device.</p></div>
-      <div class="feat"><span class="num mono">07</span><h3>Radio preferences</h3><p>Controls for dash readouts, quiet ticks, live timing and pit deadlines. Unprompted calls pause during menus and replays; direct questions still get answered.</p></div>
-      <div class="feat"><span class="num mono">08</span><h3>Voice and provider settings</h3><p>Select your microphone, speaker, language and AI providers. Use local or cloud transcription and separate models for analysis and replies.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ GAMES ============ -->
-<section class="sec" id="games">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <h2>ACC comes first.</h2>
-      <p>Built around the demands of GT racing in Assetto Corsa Competizione, with F1 25 support also available in the app.</p>
-    </div>
-    <div class="games-grid">
-      <div class="game-block reveal">
-        <div class="status ok">GT racing</div>
+    <div class="games reveal">
+      <article class="game">
+        <p class="label accent">GT racing</p>
         <h3>Assetto Corsa Competizione</h3>
-        <div class="list">
-          <div class="row"><span class="k">▸</span><span>Connect to ACC on your Windows PC for car and session telemetry.</span></div>
-          <div class="row"><span class="k">▸</span><span>Keep track of fuel, tyres and mandatory stops with short, spoken radio replies.</span></div>
-        </div>
-        <div class="game-tags"><span class="gt on">ACC</span><span class="gt">Windows</span><span class="gt">GT racing</span></div>
-      </div>
-      <div class="game-block exp reveal d1">
-        <div class="status warn">Also supported</div>
-        <h3>F1 series</h3>
-        <div class="list">
-          <div class="row"><span class="k">▸</span><span>Race in F1 25 with voice replies and telemetry-driven radio calls.</span></div>
-          <div class="row"><span class="k">▸</span><span>Connect through the game’s UDP telemetry settings and choose your voice and AI provider in the app.</span></div>
-        </div>
-        <div class="game-tags"><span class="gt">F1 25</span><span class="gt">UDP telemetry</span></div>
-      </div>
+        <p class="lead">Where the engineer was built. Fuel to the flag, pressures, damage, and the cars around you called by make.</p>
+        <ul>
+          <li><span>Shared memory</span>Car and session telemetry, read on your PC.</li>
+          <li><span>Broadcasting API</span>Optional. Adds live timing for the cars around you.</li>
+        </ul>
+      </article>
+      <article class="game alt">
+        <p class="label">Also supported</p>
+        <h3>F1 25</h3>
+        <p class="lead">Same engineer, same radio, fed by the game's UDP telemetry.</p>
+        <ul>
+          <li><span>UDP telemetry</span>Turn it on in the game's telemetry settings.</li>
+        </ul>
+      </article>
     </div>
   </div>
 </section>
 
-<!-- ============ LANGUAGES ============ -->
-<section class="sec" id="languages">
+<!-- =============== VOICE + LANGUAGES =============== -->
+<section class="sec" id="languages" aria-labelledby="lang-title">
   <div class="wrap">
     <div class="sec-head reveal">
-      <h2>It speaks your language.</h2>
+      <p class="sec-num"><b>05</b> / Voice</p>
+      <h2 class="h-sec" id="lang-title">Nine languages. <em>Translated offline.</em></h2>
+      <p class="lead">The engineer's voice and the app speak your language. Translation runs on your PC.</p>
     </div>
-    <div class="langs reveal d1">
-      <span class="lang">English <span class="code">EN</span></span>
-      <span class="lang">Español <span class="code">ES</span></span>
-      <span class="lang">Italiano <span class="code">IT</span></span>
-      <span class="lang">Français <span class="code">FR</span></span>
-      <span class="lang">Deutsch <span class="code">DE</span></span>
-      <span class="lang">Português <span class="code">PT</span></span>
-      <span class="lang">Čeština <span class="code">CS</span></span>
-      <span class="lang">Polski <span class="code">PL</span></span>
-      <span class="lang">日本語 <span class="code">JA</span></span>
+    <ul class="langs reveal" aria-label="Supported languages">
+      <li lang="en"><b>EN</b><span>English</span></li>
+      <li lang="es"><b>ES</b><span>Español</span></li>
+      <li lang="it"><b>IT</b><span>Italiano</span></li>
+      <li lang="fr"><b>FR</b><span>Français</span></li>
+      <li lang="de"><b>DE</b><span>Deutsch</span></li>
+      <li lang="pt"><b>PT</b><span>Português</span></li>
+      <li lang="cs"><b>CS</b><span>Čeština</span></li>
+      <li lang="pl"><b>PL</b><span>Polski</span></li>
+      <li lang="ja"><b>JA</b><span>日本語</span></li>
+    </ul>
+    <div class="voice-grid reveal">
+      <div><p class="label accent">Ask</p><h3>Push to talk, or just talk</h3><p>Hold a button, or let voice detection pick up your question.</p></div>
+      <div><p class="label">Hear</p><h3>Speech recognition</h3><p>faster-whisper on your PC, or Groq Whisper in the cloud.</p></div>
+      <div><p class="label">Speak</p><h3>Piper voice</h3><p>Text to speech runs locally with Piper.</p></div>
     </div>
   </div>
 </section>
 
-<!-- ============ DEVELOPER ============ -->
-<section class="sec" id="developer">
+<!-- =============== GETTING STARTED =============== -->
+<section class="sec" id="start" aria-labelledby="start-title">
   <div class="wrap">
     <div class="sec-head reveal">
-      <h2>Stay on the radio.</h2>
-      <p>Follow airaceGP on YouTube for demos, and on GitHub for project updates and release news.</p>
+      <p class="sec-num"><b>06</b> / Getting started</p>
+      <h2 class="h-sec" id="start-title">Out of the garage <em>in four steps.</em></h2>
     </div>
-    <div class="dev-grid reveal d1">
-      <a class="dev-card" href="https://github.com/nothing-gpu" target="_blank" rel="noopener">
-        <span class="dev-ico">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.3-.5-1.5.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg>
-        </span>
-        <span class="dev-meta">
-          <span class="dev-k">GitHub</span>
-          <span class="dev-v">nothing-gpu</span>
-        </span>
-        <span class="dev-arrow" aria-hidden="true">↗</span>
-      </a>
-      <a class="dev-card" href="https://www.youtube.com/@pmech-yt" target="_blank" rel="noopener">
-        <span class="dev-ico">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.3 3.6-6.3 3.6Z"/></svg>
-        </span>
-        <span class="dev-meta">
-          <span class="dev-k">YouTube</span>
-          <span class="dev-v">@pmech-yt</span>
-        </span>
-        <span class="dev-arrow" aria-hidden="true">↗</span>
-      </a>
+    <ol class="steps reveal">
+      <li><h3>Install</h3><p>A desktop app for Windows. Public download coming soon.</p></li>
+      <li><h3>Add your keys</h3><p>Onboarding asks which providers you use and builds your model chain. Keys stay on your PC in a local <code>.env</code> file.</p></li>
+      <li><h3>Connect the game</h3><p>ACC shared memory, plus the Broadcasting API for live timing. For F1 25, turn on UDP telemetry.</p></li>
+      <li><h3>Drive. Ask.</h3><p>The engineer calls what matters. Talk to it when you need something.</p></li>
+    </ol>
+    <div class="start-foot reveal">
+      <p><b>Stuck?</b> The docs cover setup, providers and settings. Clear error codes, with a fix for each.</p>
+      <div class="ctas">
+        <a class="btn primary" href="https://docs.airacegp.com/">Open the docs</a>
+        <span class="pill"><span class="dot" aria-hidden="true"></span>Download coming soon</span>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ============ FINAL CTA ============ -->
-<section class="final">
-  <div class="wrap">
-    <h2 class="reveal d1">Put an engineer<br/>in your ear.</h2>
-    <p class="reveal d1">Your next race deserves an engineer. Follow airaceGP for demos and news of the public release.</p>
-    <div class="hero-ctas reveal d2">
-      <span class="btn soon" aria-disabled="true">Download app <span class="lbl-soon">Coming soon</span></span>
-      <a class="btn" href="https://github.com/nothing-gpu" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.3-.5-1.5.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg>
-        View my GitHub
-      </a>
-      <a class="btn" href="https://www.youtube.com/@pmech-yt" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.3 3.6-6.3 3.6Z"/></svg>
-        Watch on YouTube
-      </a>
+<!-- =============== FAQ =============== -->
+<section class="sec" id="faq" aria-labelledby="faq-title">
+  <div class="wrap two">
+    <div class="reveal">
+      <p class="sec-num"><b>07</b> / FAQ</p>
+      <h2 class="h-sec" id="faq-title">Radio check.</h2>
+      <p class="lead">Straight answers. More in the <a href="https://docs.airacegp.com/">docs</a>.</p>
+    </div>
+    <div class="faq reveal">
+      <details>
+        <summary>What does it cost?</summary>
+        <div class="ans"><p>No app subscription. The AI is your choice: Ollama Cloud has a free tier, local Ollama needs no key, and paid providers bill you directly for what you use.</p></div>
+      </details>
+      <details>
+        <summary>Which AI do I need?</summary>
+        <div class="ans"><p>Any one of Ollama Cloud, Groq, Google Gemini, OpenRouter, Anthropic, an OpenAI-compatible endpoint, or Ollama on your PC. Add more to build a chain with fallback.</p></div>
+      </details>
+      <details>
+        <summary>Where do my keys go?</summary>
+        <div class="ans"><p>Into a local <strong>.env</strong> file on your PC. Race context is sent only to the providers in your chain.</p></div>
+      </details>
+      <details>
+        <summary>What runs on my PC?</summary>
+        <div class="ans"><p>The telemetry analysis, translation, Piper speech and, if you pick it, faster-whisper speech recognition. The phrasing is done by the model you choose, which can also be Ollama on your PC.</p></div>
+      </details>
+      <details>
+        <summary>Which games work?</summary>
+        <div class="ans"><p>Assetto Corsa Competizione, through shared memory and the optional Broadcasting API. F1 25, through its UDP telemetry.</p></div>
+      </details>
+      <details>
+        <summary>Can I see it on my phone?</summary>
+        <div class="ans"><p>Yes. The dashboard works in a phone browser over your LAN.</p></div>
+      </details>
+      <details>
+        <summary>How good are the answers?</summary>
+        <div class="ans"><p>In our internal tests, accuracy on a 320-scenario suite went from 76% to 93–94% once the app started doing the analysis itself. Results depend on the model you choose.</p></div>
+      </details>
+      <details>
+        <summary>Is it official?</summary>
+        <div class="ans"><p>No. airaceGP is an unofficial fan-made tool, not affiliated with the makers of either game.</p></div>
+      </details>
     </div>
   </div>
 </section>
 
-<!-- ============ CREDITS ============ -->
-<section class="sec" id="credits">
+<!-- =============== FOLLOW + CREDITS =============== -->
+<section class="sec" id="follow" aria-labelledby="follow-title">
   <div class="wrap">
     <div class="sec-head reveal">
-      <h2>Standing on other people's work.</h2>
-      <p>airaceGP is a small project built on a lot of open work. This
-      page names some of the people whose code, voices, translations
-      and track maps make it possible. Full credits and notices are maintained
-      with the app.</p>
+      <p class="sec-num"><b>08</b> / Stay on the radio</p>
+      <h2 class="h-sec" id="follow-title">Demos and <em>release news.</em></h2>
     </div>
-    <div class="cred-grid reveal d1">
-      <div class="cred">
-        <div class="cred-k">Voice</div>
-        <p>Piper by Michael Hansen and the Rhasspy project, and
-        piper-plus by ayutaz. Voice datasets by Thorsten Mueller
-        (German), Carlos Fonseca (Spanish), czyzi0 (Polish), the Nabu
-        Casa voice-datasets team (Portuguese, Czech), the SIWIS
-        project (French).</p>
-      </div>
-      <div class="cred">
-        <div class="cred-k">Speech recognition</div>
-        <p>Vosk by Alpha Cephei for the wake word. faster-whisper by
-        SYSTRAN, riding on CTranslate2 by OpenNMT and SYSTRAN, with
-        weights from OpenAI's Whisper. All MIT or Apache 2.0.</p>
-      </div>
-      <div class="cred">
-        <div class="cred-k">Translation</div>
-        <p>Argos Translate by Argos Open Technologies, with models
-        trained on the OPUS parallel corpus collection curated by
-        Joerg Tiedemann and the Helsinki-NLP group.</p>
-      </div>
-      <div class="cred">
-        <div class="cred-k">Track outlines</div>
-        <p>Traced from Wikimedia Commons maps by Will Pittenger,
-        GabrielStella, HumanBodyPiloter5, Rumbin, Firkin, AlexJ,
-        Ocdp, Sas1998, Dh16dh, Nasho3498, cBuckley, and
-        ごひょううぺこ. CC0, CC BY 3.0, CC BY-SA 3.0 / 4.0.</p>
-      </div>
-      <div class="cred">
-        <div class="cred-k">Dashboard</div>
-        <p>Instrument Sans by the Instrument Sans Project Authors,
-        Titillium Web by the Accademia di Belle Arti di Urbino, both
-        SIL Open Font License 1.1. pywebview by Roman Sirokov,
-        python-sounddevice by Matthias Geier, PortAudio by Ross
-        Bencina and Phil Burk, NumPy contributors, ONNX Runtime by
-        Microsoft.</p>
-      </div>
-      <div class="cred">
-        <div class="cred-k">Telemetry spec</div>
-        <p>ACC shared-memory documentation and Broadcasting SDK by Kunos Simulazioni.
-        The existing F1 integration uses the EA/Codemasters UDP specification
-        and packet layouts referenced from hotlaps.io (MIT).</p>
-      </div>
+    <div class="follow reveal">
+      <a href="https://www.youtube.com/@pmech-yt"><span><span class="label">YouTube</span><b>@pmech-yt</b></span><span class="arrow" aria-hidden="true">&#8599;</span></a>
+      <a href="https://github.com/nothing-gpu"><span><span class="label">GitHub</span><b>nothing-gpu</b></span><span class="arrow" aria-hidden="true">&#8599;</span></a>
     </div>
+
+    <details class="credits" id="credits">
+      <summary>Credits · standing on other people's work</summary>
+      <p class="intro">airaceGP is a small project built on a lot of open work. These are some of the people whose code, voices, translations and track maps make it possible. Full credits and notices are kept with the app.</p>
+      <div class="credit-grid">
+        <div><h3>Voice</h3><p>Piper by Michael Hansen and the Rhasspy project, and piper-plus by ayutaz. Voice datasets by Thorsten Mueller (German), Carlos Fonseca (Spanish), czyzi0 (Polish), the Nabu Casa voice-datasets team (Portuguese, Czech), the SIWIS project (French).</p></div>
+        <div><h3>Speech recognition</h3><p>Vosk by Alpha Cephei for the wake word. faster-whisper by SYSTRAN, riding on CTranslate2 by OpenNMT and SYSTRAN, with weights from OpenAI's Whisper. All MIT or Apache 2.0.</p></div>
+        <div><h3>Translation</h3><p>Argos Translate by Argos Open Technologies, with models trained on the OPUS parallel corpus collection curated by Joerg Tiedemann and the Helsinki-NLP group.</p></div>
+        <div><h3>Track outlines</h3><p>Traced from Wikimedia Commons maps by Will Pittenger, GabrielStella, HumanBodyPiloter5, Rumbin, Firkin, AlexJ, Ocdp, Sas1998, Dh16dh, Nasho3498, cBuckley, and ごひょううぺこ. CC0, CC BY 3.0, CC BY-SA 3.0 / 4.0.</p></div>
+        <div><h3>Dashboard</h3><p>Instrument Sans by the Instrument Sans Project Authors, Titillium Web by the Accademia di Belle Arti di Urbino, both SIL Open Font License 1.1. pywebview by Roman Sirokov, python-sounddevice by Matthias Geier, PortAudio by Ross Bencina and Phil Burk, NumPy contributors, ONNX Runtime by Microsoft.</p></div>
+        <div><h3>Telemetry spec</h3><p>ACC shared-memory documentation and Broadcasting SDK by Kunos Simulazioni. The F1 integration uses the EA/Codemasters UDP specification and packet layouts referenced from hotlaps.io (MIT).</p></div>
+      </div>
+    </details>
   </div>
 </section>
-
 </main>
 
-<!-- ============ FOOTER ============ -->
-<footer>
+<footer class="site-foot">
   <div class="wrap">
-    <div class="foot-top">
-      <div class="foot-brand">
-        <a class="brand" href="#top" aria-label="airaceGP home">
-          <span class="ring">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="airaceGP helmet">
-              <circle cx="256" cy="256" r="256" fill="#000000"/>
-              <g fill="none" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M146,410 L420,410 C452,410 458,380 452,345 C448,300 446,240 419,205 C400,150 320,96 228,98 C150,100 78,160 70,235 C64,300 90,410 146,410 Z"/>
-                <path d="M419,205 C360,200 250,200 224,250 C214,275 240,300 300,305 L452,345"/>
-              </g>
-            </svg>
-          </span>
-          <span class="name"><b>airaceGP</b></span>
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="#top" aria-label="airaceGP, back to top">
+          <svg viewBox="0 0 512 512" aria-hidden="true" focusable="false">
+            <circle cx="256" cy="256" r="246" fill="#15191e" stroke="#e8eaed" stroke-width="14"/>
+            <g fill="none" stroke="#e8eaed" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M146,410 L420,410 C452,410 458,380 452,345 C448,300 446,240 419,205 C400,150 320,96 228,98 C150,100 78,160 70,235 C64,300 90,410 146,410 Z"/>
+              <path d="M419,205 C360,200 250,200 224,250 C214,275 240,300 300,305 L452,345" stroke="#ff5a3c"/>
+            </g>
+          </svg>
+          <span class="brand-name">airace<span>GP</span></span>
         </a>
-        <p>Your AI race engineer for Assetto Corsa Competizione.</p>
+        <p>An AI race engineer for Assetto Corsa Competizione and F1 25. Your keys, your models, your race.</p>
       </div>
-      <div class="foot-links">
-        <div class="foot-col">
-          <h3>Project</h3>
-          <a href="https://github.com/nothing-gpu" target="_blank" rel="noopener">GitHub · nothing-gpu</a>
-          <a href="https://www.youtube.com/@pmech-yt" target="_blank" rel="noopener">YouTube · @pmech-yt</a>
-        </div>
-        <div class="foot-col">
-          <h3>On this page</h3>
-          <a href="#features">Features</a>
-          <a href="#race-support">Race support</a>
-          <a href="#games">Game support</a>
-          <a href="#free">Free / BYO key</a>
-          <a href="#credits">Credits</a>
-        </div>
+      <div>
+        <h2>Project</h2>
+        <ul>
+          <li><a href="https://docs.airacegp.com/">Docs</a></li>
+          <li><a href="https://github.com/nothing-gpu">GitHub · nothing-gpu</a></li>
+          <li><a href="https://www.youtube.com/@pmech-yt">YouTube · @pmech-yt</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>On this page</h2>
+        <ul>
+          <li><a href="#analysis">Analysis</a></li>
+          <li><a href="#models">Model chain</a></li>
+          <li><a href="#app">The app</a></li>
+          <li><a href="#start">Getting started</a></li>
+          <li><a href="#credits">Credits</a></li>
+        </ul>
       </div>
     </div>
-    <div class="foot-bottom">
-      <span class="tag">airaceGP · your keys, your models, your data</span>
-      <span class="project-note">Assetto Corsa Competizione</span>
-    </div>
-    <div class="foot-disclaimer" style="margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.08);font-family:'Chivo Mono',ui-monospace,monospace;font-size:10.5px;line-height:1.6;letter-spacing:.02em;color:var(--muted);max-width:820px;">
-      airaceGP is an unofficial fan-made tool. It is not affiliated with, endorsed by, or in
-      partnership with Kunos Simulazioni, 505 Games, Formula One Licensing BV, the FIA, Electronic Arts Inc., or Codemasters.
-      Assetto Corsa Competizione is a game by Kunos Simulazioni, published by 505 Games.
-      F1, FORMULA 1, FIA FORMULA ONE WORLD CHAMPIONSHIP and related marks are trademarks of
-      Formula One Licensing BV. F1 25 is a product of Electronic Arts Inc. and Codemasters.
-      Game names are used solely to identify compatibility.
-    </div>
+    <p class="legal">airaceGP is an unofficial fan-made tool. It is not affiliated with, endorsed by, or in partnership with Kunos Simulazioni, 505 Games, Formula One Licensing BV, the FIA, Electronic Arts Inc., or Codemasters. Assetto Corsa Competizione is a game by Kunos Simulazioni, published by 505 Games. F1, FORMULA 1, FIA FORMULA ONE WORLD CHAMPIONSHIP and related marks are trademarks of Formula One Licensing BV. F1 25 is a product of Electronic Arts Inc. and Codemasters. Game names are used solely to identify compatibility. Car makes on this page appear in example values only.</p>
   </div>
 </footer>
 
 <script>
-/* scroll reveal: progressive enhancement, guarded for reduced motion */
 (function(){
-  var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var els = document.querySelectorAll('.reveal');
-  if(rm || !('IntersectionObserver' in window)){
-    els.forEach(function(e){e.classList.add('in');});
-    return;
-  }
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(en){
-      if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // mobile menu
+  var btn = document.querySelector('.menu-btn'), links = document.getElementById('nav-links');
+  function closeMenu(){ links.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
+  if (btn && links){
+    btn.addEventListener('click', function(){
+      var open = links.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
-  },{threshold:0.12, rootMargin:'0px 0px -8% 0px'});
-  els.forEach(function(e){io.observe(e);});
+    links.addEventListener('click', function(e){ if (e.target.closest('a')) closeMenu(); });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape' && links.classList.contains('open')){ closeMenu(); btn.focus(); }
+    });
+  }
+
+  // credits link in the footer opens the collapsed credits
+  document.querySelectorAll('a[href="#credits"]').forEach(function(a){
+    a.addEventListener('click', function(){ var d = document.getElementById('credits'); if (d) d.open = true; });
+  });
+
+  // radio waveform bars (decorative)
+  var wave = document.querySelector('[data-wave]');
+  if (wave){
+    var h = [18,30,52,74,46,88,62,34,70,96,58,40,76,50,28,64,84,44,22,56,38,68,30,16,42,60,26,48,20,12,34,58,80,46,24,14];
+    h.forEach(function(v, i){
+      var b = document.createElement('i');
+      b.style.height = v + '%';
+      b.style.animationDelay = (-(i * 0.13) % 1.1).toFixed(2) + 's';
+      wave.appendChild(b);
+    });
+  }
+
+  // reveal on scroll
+  var els = document.querySelectorAll('.reveal, [data-metrics]');
+  if (reduce || !('IntersectionObserver' in window)){
+    els.forEach(function(el){ el.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if (en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, {rootMargin:'0px 0px -6% 0px', threshold:0.06});
+    els.forEach(function(el){ io.observe(el); });
+  }
+
+  // illustration only: the session clock counts down
+  if (reduce) return;
+  var clock = document.querySelector('[data-clock]');
+  var secs = 38 * 60 + 12;
+  if (clock) setInterval(function(){
+    secs = secs > 0 ? secs - 1 : 38 * 60 + 12;
+    clock.textContent = Math.floor(secs / 60) + ':' + ('0' + secs % 60).slice(-2);
+  }, 1000);
 })();
 </script>
-
 </body>
 </html>
