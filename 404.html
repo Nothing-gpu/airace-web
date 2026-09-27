@@ -26,7 +26,9 @@
 *{margin:0;padding:0}
 html{background:#000}
 body{background:var(--ground);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
-:where(a):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+:where(a,button,[tabindex]):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.skip{position:absolute;left:12px;top:-60px;z-index:100;background:var(--accent);color:#000;padding:10px 14px;font:700 14px var(--body);text-decoration:none}
+.skip:focus{top:12px}
 .wrap{max-width:1240px;margin:0 auto;padding:0 var(--gutter);width:100%}
 header{border-bottom:1px solid var(--line)}
 .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px}
@@ -49,7 +51,7 @@ main{flex:1;display:flex;align-items:center;padding:clamp(48px,8vw,96px) 0}
 .big{font:800 clamp(96px,22vw,240px)/.85 var(--disp);letter-spacing:-.01em;margin:0 0 12px;display:flex}
 .big .d{display:block}
 .big .z{color:var(--accent)}
-h1{font:700 clamp(30px,4.6vw,52px)/1 var(--disp);text-transform:uppercase;margin-bottom:18px;max-width:20ch}
+h1{overflow-wrap:break-word;font:700 clamp(30px,4.6vw,52px)/1 var(--disp);text-transform:uppercase;margin-bottom:18px;max-width:20ch}
 .radio{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;border-left:3px solid var(--accent);background:var(--panel);padding:16px 18px;margin:26px 0 30px;max-width:560px;font:500 15px/1.45 var(--mono)}
 .radio .who{font:700 12px/1.9 var(--disp);letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
 .radio .who.e{color:var(--accent)}
@@ -63,9 +65,10 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px}
 @media (prefers-reduced-motion:no-preference){
   @keyframes rise{from{transform:translateY(105%);clip-path:inset(-40% -300% 100% -300%)}to{transform:none;clip-path:inset(-40% -300% -40% -300%)}}
   @keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-  @keyframes flicker{0%,100%{opacity:1}3%{opacity:.2}5%{opacity:1}7%{opacity:.35}9%{opacity:1}62%{opacity:1}63%{opacity:.3}64%{opacity:1}}
+  /* one short flicker, never repeated: <= 2 flashes/s (WCAG 2.3.1), done 2.6 s after load (2.2.2) */
+  @keyframes flicker{0%,100%{opacity:1}12%{opacity:.2}20%{opacity:1}28%{opacity:.35}36%{opacity:1}}
   .js .big .d{animation:rise 1s cubic-bezier(.16,.84,.44,1) both}
-  .js .big .d:nth-child(2){animation:rise 1s cubic-bezier(.16,.84,.44,1) .09s both,flicker 5s linear 1.4s infinite}
+  .js .big .d:nth-child(2){animation:rise 1s cubic-bezier(.16,.84,.44,1) .09s both,flicker 1.2s linear 1.4s 1}
   .js .big .d:nth-child(3){animation-delay:.18s}
   .js .intro{animation:up .8s cubic-bezier(.16,.84,.44,1) both;animation-delay:calc(var(--d) * 1ms)}
 }
@@ -73,6 +76,7 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px}
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header>
   <div class="wrap nav">
     <a class="brand" href="/" aria-label="airaceGP home">
@@ -85,10 +89,10 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px}
       </svg>
       <span class="brand-name">airace<span>GP</span></span>
     </a>
-    <a class="btn" href="/">Home</a>
+    <nav aria-label="Main"><a class="btn" href="/">Home</a></nav>
   </div>
 </header>
-<main>
+<main id="main">
   <div class="wrap">
     <p class="big" aria-hidden="true"><span class="d">4</span><span class="d z">0</span><span class="d">4</span></p>
     <h1 class="intro" style="--d:380">You're off the racing line.</h1>
@@ -106,7 +110,7 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px}
   <div class="wrap">
     <div class="foot">
       <span>airaceGP · your keys, your models, your race</span>
-      <span><a href="https://github.com/nothing-gpu">GitHub</a> · <a href="https://www.youtube.com/@pmech-yt">YouTube</a></span>
+      <span><a href="/accessibility.html">Accessibility</a> · <a href="https://github.com/nothing-gpu">GitHub</a> · <a href="https://www.youtube.com/@pmech-yt">YouTube</a></span>
     </div>
     <p class="legal">airaceGP is an unofficial fan-made tool. It is not affiliated with, endorsed by, or in partnership with Kunos Simulazioni, 505 Games, Formula One Licensing BV, the FIA, Electronic Arts Inc., or Codemasters. Game names are used solely to identify compatibility.</p>
   </div>

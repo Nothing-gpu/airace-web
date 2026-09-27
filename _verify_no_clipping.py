@@ -36,7 +36,7 @@ import sys
 from playwright.async_api import async_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parent
-PAGES = ["index.html", "404.html"]
+PAGES = ["index.html", "404.html", "accessibility.html"]
 WIDTHS = [360, 390, 768, 1280, 1440, 1920]
 
 PROBE = r"""
