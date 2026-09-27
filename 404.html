@@ -5,17 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>404 - Off the racing line · airaceGP</title>
 <meta name="robots" content="noindex" />
-<meta name="theme-color" content="#0d0f12" />
+<meta name="theme-color" content="#000000" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500&family=JetBrains+Mono:wght@500;700&display=swap" />
+<script>document.documentElement.classList.add('js')</script>
 <style>
 :root{
-  --ground:#0d0f12;--panel:#15191e;--text:#e8eaed;--muted:#9aa3ad;--accent:#ff5a3c;
-  --line:rgba(232,234,237,.10);--line-2:rgba(232,234,237,.18);
+  --ground:#000000;--panel:#0b0b0b;--text:#f2f2f2;--muted:#9e9e9e;--accent:#ff2d1f;
+  --line:rgba(255,255,255,.10);--line-2:rgba(255,255,255,.18);
   --disp:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
   --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
@@ -23,6 +24,7 @@
 }
 *,*::before,*::after{box-sizing:border-box}
 *{margin:0;padding:0}
+html{background:#000}
 body{background:var(--ground);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
 :where(a):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .wrap{max-width:1240px;margin:0 auto;padding:0 var(--gutter);width:100%}
@@ -33,14 +35,20 @@ header{border-bottom:1px solid var(--line)}
 .brand-name{font:800 22px/1 var(--disp)}
 .brand-name span{color:var(--accent)}
 .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;font:700 15px/1.1 var(--disp);letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border:1px solid var(--line-2);color:var(--text);text-align:center}
-.btn:hover{border-color:var(--text)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--ground)}
-.btn.primary:hover{background:#ff7359}
+.btn{position:relative;isolation:isolate;overflow:hidden;gap:10px;transition:color .2s,border-color .2s}
+.btn::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--text);transform:scaleX(0);transform-origin:right;transition:transform .45s cubic-bezier(.16,.84,.44,1)}
+.btn:hover{border-color:var(--text);color:#000}
+.btn:hover::before{transform:scaleX(1);transform-origin:left}
+.btn .arr{display:inline-block;font:500 16px/1 var(--mono);transition:transform .35s cubic-bezier(.16,.84,.44,1)}
+.btn:hover .arr{transform:translateX(5px)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#000}
+.btn.primary::before{background:#ff5347}
+.btn.primary:hover{border-color:#ff5347}
 .nav .btn{min-height:40px;padding:0 14px;font-size:14px}
 main{flex:1;display:flex;align-items:center;padding:clamp(48px,8vw,96px) 0}
-.label{font:600 12px/1.2 var(--disp);letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
-.big{font:800 clamp(96px,22vw,240px)/.85 var(--disp);letter-spacing:-.01em;margin:16px 0 8px}
-.big span{color:var(--accent)}
+.big{font:800 clamp(96px,22vw,240px)/.85 var(--disp);letter-spacing:-.01em;margin:0 0 12px;display:flex}
+.big .d{display:block}
+.big .z{color:var(--accent)}
 h1{font:700 clamp(30px,4.6vw,52px)/1 var(--disp);text-transform:uppercase;margin-bottom:18px;max-width:20ch}
 .radio{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;border-left:3px solid var(--accent);background:var(--panel);padding:16px 18px;margin:26px 0 30px;max-width:560px;font:500 15px/1.45 var(--mono)}
 .radio .who{font:700 12px/1.9 var(--disp);letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
@@ -51,6 +59,17 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px}
 .foot a{color:var(--text)}
 .legal{margin-top:12px;font:400 11.5px/1.6 var(--mono);color:var(--muted);max-width:100ch}
 @media(max-width:520px){.ctas .btn{flex:1 1 100%}}
+/* motion: only with scripts on and motion allowed; otherwise the page is static */
+@media (prefers-reduced-motion:no-preference){
+  @keyframes rise{from{transform:translateY(105%);clip-path:inset(-40% -300% 100% -300%)}to{transform:none;clip-path:inset(-40% -300% -40% -300%)}}
+  @keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  @keyframes flicker{0%,100%{opacity:1}3%{opacity:.2}5%{opacity:1}7%{opacity:.35}9%{opacity:1}62%{opacity:1}63%{opacity:.3}64%{opacity:1}}
+  .js .big .d{animation:rise 1s cubic-bezier(.16,.84,.44,1) both}
+  .js .big .d:nth-child(2){animation:rise 1s cubic-bezier(.16,.84,.44,1) .09s both,flicker 5s linear 1.4s infinite}
+  .js .big .d:nth-child(3){animation-delay:.18s}
+  .js .intro{animation:up .8s cubic-bezier(.16,.84,.44,1) both;animation-delay:calc(var(--d) * 1ms)}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -58,10 +77,10 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px}
   <div class="wrap nav">
     <a class="brand" href="/" aria-label="airaceGP home">
       <svg viewBox="0 0 512 512" aria-hidden="true" focusable="false">
-        <circle cx="256" cy="256" r="246" fill="#15191e" stroke="#e8eaed" stroke-width="14"/>
-        <g fill="none" stroke="#e8eaed" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="256" cy="256" r="246" fill="#000" stroke="#fff" stroke-width="14"/>
+        <g fill="none" stroke="#fff" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
           <path d="M146,410 L420,410 C452,410 458,380 452,345 C448,300 446,240 419,205 C400,150 320,96 228,98 C150,100 78,160 70,235 C64,300 90,410 146,410 Z"/>
-          <path d="M419,205 C360,200 250,200 224,250 C214,275 240,300 300,305 L452,345" stroke="#ff5a3c"/>
+          <path d="M419,205 C360,200 250,200 224,250 C214,275 240,300 300,305 L452,345"/>
         </g>
       </svg>
       <span class="brand-name">airace<span>GP</span></span>
@@ -71,15 +90,14 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px}
 </header>
 <main>
   <div class="wrap">
-    <p class="label">Error 404 · page not found</p>
-    <p class="big" aria-hidden="true">4<span>0</span>4</p>
-    <h1>You're off the racing line.</h1>
-    <div class="radio">
+    <p class="big" aria-hidden="true"><span class="d">4</span><span class="d z">0</span><span class="d">4</span></p>
+    <h1 class="intro" style="--d:380">You're off the racing line.</h1>
+    <div class="radio intro" style="--d:520">
       <span class="who">Driver</span><span>“Where am I?”</span>
       <span class="who e">Eng</span><span>Page not found. Rejoin when safe. Home is the next exit.</span>
     </div>
-    <div class="ctas">
-      <a class="btn primary" href="/">Back to airaceGP</a>
+    <div class="ctas intro" style="--d:660">
+      <a class="btn primary" href="/">Back to airaceGP<span class="arr" aria-hidden="true">&#8594;</span></a>
       <a class="btn" href="https://docs.airacegp.com/">Open the docs</a>
     </div>
   </div>
