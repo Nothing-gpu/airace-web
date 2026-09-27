@@ -54,7 +54,7 @@ import threading
 from playwright.async_api import async_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parent
-PAGES = ["index.html", "404.html"]
+PAGES = ["index.html", "404.html", "accessibility.html"]
 BASE = ""  # set in main(): pages are served over HTTP so root-absolute links (/favicon.svg) resolve
 ALL = PAGES + ["og-image.html"]
 

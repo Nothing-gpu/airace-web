@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Accessibility statement · airaceGP</title>
+<meta name="description" content="How accessible airacegp.com is, how we checked it, and how to report a problem or ask for an accessible alternative." />
+<meta name="theme-color" content="#000000" />
+<link rel="canonical" href="https://airacegp.com/accessibility.html" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" />
+<style>
+:root{
+  --ground:#000000;--panel:#0b0b0b;--text:#f2f2f2;--muted:#9e9e9e;--accent:#ff2d1f;
+  --line:rgba(255,255,255,.10);--line-2:rgba(255,255,255,.18);
+  --disp:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --gutter:clamp(16px,4vw,40px);
+}
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0;padding:0}
+html{background:#000;-webkit-text-size-adjust:100%}
+body{background:var(--ground);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+a{color:var(--text);text-decoration-color:var(--accent);text-underline-offset:3px}
+a:hover{color:var(--accent)}
+:where(a,button,[tabindex]):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.skip{position:absolute;left:12px;top:-60px;z-index:100;background:var(--accent);color:#000;padding:10px 14px;font:700 14px var(--body);text-decoration:none}
+.skip:focus{top:12px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 var(--gutter);width:100%}
+header{border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
+.brand svg{width:30px;height:30px;flex:none}
+.brand-name{font:800 22px/1 var(--disp)}
+.brand-name span{color:var(--accent)}
+.nav ul{display:flex;gap:2px;list-style:none}
+.nav ul a{display:block;padding:10px 12px;font:600 14px/1 var(--disp);letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--muted)}
+.nav ul a:hover{color:var(--text)}
+main{flex:1;padding:clamp(40px,7vw,88px) 0 clamp(56px,8vw,104px)}
+.doc{max-width:760px}
+h1{font:800 clamp(44px,7vw,88px)/.9 var(--disp);text-transform:uppercase;letter-spacing:-.005em;margin-bottom:22px;overflow-wrap:break-word}
+.lead{color:var(--muted);font-size:clamp(17px,1.6vw,19px);max-width:62ch}
+.lead strong{color:var(--text);font-weight:600}
+section{margin-top:clamp(40px,5vw,56px);padding-top:22px;border-top:1px solid var(--line)}
+h2{font:700 clamp(28px,3.4vw,38px)/1.05 var(--disp);text-transform:uppercase;letter-spacing:.01em;margin-bottom:14px;overflow-wrap:break-word}
+h3{font:700 22px/1.2 var(--disp);letter-spacing:.03em;text-transform:uppercase;margin:24px 0 6px}
+p{margin:0 0 14px}
+section p,section li{font-size:16px}
+main li{margin:0 0 8px}
+main ul{margin:0 0 16px 1.2em}
+main li::marker{color:var(--accent)}
+.status{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 18px;align-items:baseline;border:1px solid var(--line);border-left:3px solid var(--accent);background:var(--panel);padding:18px 20px;margin:4px 0 16px}
+.status b{font:800 clamp(26px,3vw,32px)/1 var(--disp);text-transform:uppercase;letter-spacing:.02em}
+.status p{margin:0;color:var(--muted)}
+@media (max-width:560px){.status{grid-template-columns:minmax(0,1fr)}body{font-size:16px}}
+.muted{color:var(--muted)}
+code{font:500 .88em var(--mono);background:var(--panel);border:1px solid var(--line);padding:1px 5px}
+footer{border-top:1px solid var(--line);padding:22px 0 28px}
+.foot{display:flex;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;font:500 12px/1.6 var(--mono);color:var(--muted)}
+.foot a{color:var(--text)}
+.legal{margin-top:12px;font:400 11.5px/1.6 var(--mono);color:var(--muted);max-width:100ch}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="/" aria-label="airaceGP home">
+      <svg viewBox="0 0 512 512" aria-hidden="true" focusable="false">
+        <circle cx="256" cy="256" r="246" fill="#000" stroke="#fff" stroke-width="14"/>
+        <g fill="none" stroke="#fff" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M146,410 L420,410 C452,410 458,380 452,345 C448,300 446,240 419,205 C400,150 320,96 228,98 C150,100 78,160 70,235 C64,300 90,410 146,410 Z"/>
+          <path d="M419,205 C360,200 250,200 224,250 C214,275 240,300 300,305 L452,345"/>
+        </g>
+      </svg>
+      <span class="brand-name">airace<span>GP</span></span>
+    </a>
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="https://docs.airacegp.com/">Docs</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap doc">
+    <h1>Accessibility statement</h1>
+    <p class="lead">This statement covers <strong>airacegp.com</strong>: the home page, this page and the
+    page-not-found page. The documentation at docs.airacegp.com has
+    <a href="https://docs.airacegp.com/accessibility.html">its own accessibility statement</a>.</p>
+    <p class="lead">airaceGP is a private project, not a public-sector body. The Luxembourg rules on
+    digital accessibility apply to public-sector websites; we follow them voluntarily, with the same
+    standard: EN 301 549 V3.2.1, which for websites means WCAG 2.1 Level AA.</p>
+
+    <section aria-labelledby="status">
+      <h2 id="status">Compliance status</h2>
+      <div class="status">
+        <b>Fully compliant</b>
+        <p>airacegp.com is fully compliant with EN 301 549 V3.2.1 and WCAG 2.1 Level AA, based on our own
+        assessment of 27 September 2026.</p>
+      </div>
+      <p>That assessment found problems, and we fixed them before publishing this statement. Among them:
+      animations that repeated forever and could not be paused, a flickering number on the page-not-found
+      page that kept repeating, and a missing skip link. Now every animation stops by itself, the home page
+      has a <strong>Pause animations</strong> button in its header that stops all motion at once and is
+      remembered, and the site is static if your system asks for reduced motion.</p>
+      <p>No assistive-technology user has tested the site yet. If a test with a real screen reader finds a
+      problem, we will fix it or list it below and change this status.</p>
+    </section>
+
+    <section aria-labelledby="not-accessible">
+      <h2 id="not-accessible">What is not accessible</h2>
+      <h3>Non-compliant content</h3>
+      <p>None known.</p>
+      <h3>Exempt content</h3>
+      <p>None on these pages. Links to YouTube and GitHub lead to third-party sites that we do not run or
+      control; their accessibility is up to them. The fonts come from Google Fonts; if they do not load,
+      the text falls back to your system fonts and stays readable.</p>
+      <h3>Disproportionate burden</h3>
+      <p>None claimed: nothing on this site is left inaccessible on grounds of cost or effort.</p>
+    </section>
+
+    <section aria-labelledby="method">
+      <h2 id="method">How we assessed it</h2>
+      <p>A self-assessment by the project on <strong>27 September 2026</strong>. Every page was checked at 390 and
+      1440 pixels wide, with animations on and with reduced motion:</p>
+      <ul>
+        <li>automated testing with axe-core 4.10 against the WCAG 2.0 and 2.1 A and AA rules, with every result
+        axe could not decide reviewed by hand;</li>
+        <li>keyboard only: every link and button reached in order with a visible focus indicator (measured at
+        3:1 contrast or more), the skip link, the mobile menu and the questions that open and close;</li>
+        <li>zoom to 200%, reflow at 320 pixels wide, and the WCAG text-spacing test;</li>
+        <li>contrast of text and controls, animations (pausing, and nothing flashing more than three times a
+        second);</li>
+        <li>the structure a screen reader relies on: page language, titles, landmarks, headings, link names
+        and text alternatives.</li>
+      </ul>
+      <p>The automated part is the <code>_verify_a11y.py</code> script in the site's repository. We could not yet
+      test with a real screen reader such as NVDA, JAWS or VoiceOver; that test is still to be done.</p>
+      <p class="muted">Statement prepared on 27 September 2026. Last reviewed on 27 September 2026.</p>
+    </section>
+
+    <section aria-labelledby="feedback">
+      <h2 id="feedback">Report a problem</h2>
+      <p>If something on this site does not work for you, or you need the content in another form, tell us:
+      <a href="https://github.com/Nothing-gpu/airace-web/issues/new">open an issue on GitHub</a>
+      (a free GitHub account is needed). Say which page, what you were trying to do, and, if you like, the
+      browser and assistive technology you use.</p>
+      <p>We will answer within one month.</p>
+      <!-- TODO(owner): add a contact email if desired -->
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <span>airaceGP · your keys, your models, your race</span>
+      <span><a href="/accessibility.html" aria-current="page">Accessibility</a> · <a href="https://github.com/nothing-gpu">GitHub</a> · <a href="https://www.youtube.com/@pmech-yt">YouTube</a></span>
+    </div>
+    <p class="legal">airaceGP is an unofficial fan-made tool. It is not affiliated with, endorsed by, or in partnership with Kunos Simulazioni, 505 Games, Formula One Licensing BV, the FIA, Electronic Arts Inc., or Codemasters. Game names are used solely to identify compatibility.</p>
+  </div>
+</footer>
+</body>
+</html>
