@@ -198,7 +198,7 @@ VISIBILITY_PROBE = r"""
           moved = moved || `${V.name(n)} has transform ${t}`;
       }
       const cp = cs.clipPath;
-      if (cp && cp !== 'none' && /inset\(\s*0[^)]*100%/.test(cp)) moved = moved || `${V.name(n)} clip-path ${cp}`;
+      if (cp && cp !== 'none' && /inset\([^)]*100%/.test(cp)) moved = moved || `${V.name(n)} clip-path ${cp}`;
     }
     if (op < 0.999) out.push(`hidden: effective opacity ${op.toFixed(2)}: ${V.name(e)}`);
     if (moved) out.push(`offset: ${V.name(e)} <- ${moved}`);
