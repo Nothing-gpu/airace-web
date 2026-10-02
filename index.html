@@ -765,6 +765,8 @@ section{position:relative}
       <li>Ollama local<small>on your PC</small></li>
     </ul>
 
+    <p class="lead reveal">When a provider fails, the app says which problem it was and what to do about it. Every failure has a code and a fix, and the next provider in your chain takes over. <a href="https://docs.airacegp.com/errors">See the error codes</a>.</p>
+
     <div class="qa reveal">
       <p class="score"><span data-count data-from="0" class="cv">80</span><span>/80</span></p>
       <p><strong>Driver questions go to the model that answered them best.</strong> gemma4:31b got 80 of 80 right across three unseen test sets, in about 1.5–3 seconds. In our internal tests.</p>
@@ -826,7 +828,7 @@ section{position:relative}
     <div class="settings reveal">
       <div>
         <h3>Tune the engineer.</h3>
-        <p>Talkative or quiet, short calls or longer ones. Set it once in settings.</p>
+        <p>Talkative or quiet, short calls or longer ones, spaced out or back to back. Every change applies from the next call. <a href="https://docs.airacegp.com/customizing">See every setting</a>.</p>
       </div>
       <ul class="set-list">
         <li>Chattiness<span>how often it talks</span></li>
@@ -835,6 +837,12 @@ section{position:relative}
         <li>Fuel chatter<span>fuel calls</span></li>
         <li>Dash readout<span>dash values</span></li>
         <li>Live timing<span>ACC broadcast</span></li>
+        <li>Call spacing<span>minimum gap between calls</span></li>
+        <li>Corner hold<span>waits for the exit, ACC</span></li>
+        <li>Voices<span>and volume</span></li>
+        <li>Wake word<span>optional</span></li>
+        <li>Custom instructions<span>your own rules</span></li>
+        <li>Model chain<span>order and fallback</span></li>
       </ul>
     </div>
   </div>
@@ -970,6 +978,7 @@ section{position:relative}
         <div><h3>Translation</h3><p>Argos Translate by Argos Open Technologies, with models trained on the OPUS parallel corpus collection curated by Joerg Tiedemann and the Helsinki-NLP group.</p></div>
         <div><h3>Track outlines</h3><p>Traced from Wikimedia Commons maps by Will Pittenger, GabrielStella, HumanBodyPiloter5, Rumbin, Firkin, AlexJ, Ocdp, Sas1998, Dh16dh, Nasho3498, cBuckley, and ごひょううぺこ. CC0, CC BY 3.0, CC BY-SA 3.0 / 4.0.</p></div>
         <div><h3>Dashboard</h3><p>Instrument Sans by the Instrument Sans Project Authors, Titillium Web by the Accademia di Belle Arti di Urbino, both SIL Open Font License 1.1. pywebview by Roman Sirokov, python-sounddevice by Matthias Geier, PortAudio by Ross Bencina and Phil Burk, NumPy contributors, ONNX Runtime by Microsoft.</p></div>
+        <div><h3>Models</h3><p>Gemma by Google DeepMind is the default model, served through Ollama, OpenRouter or Groq, each under its own terms. None of them is affiliated with airaceGP.</p></div>
         <div><h3>Telemetry spec</h3><p>ACC shared-memory documentation and Broadcasting SDK by Kunos Simulazioni. The F1 integration uses the EA/Codemasters UDP specification and packet layouts referenced from hotlaps.io (MIT).</p></div>
       </div>
     </details>
