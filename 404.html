@@ -9,14 +9,20 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500&family=JetBrains+Mono:wght@500;700&display=swap" />
 <script>document.documentElement.classList.add('js')</script>
 <style>
+@font-face{font-family:"Barlow";font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/barlow-400.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-style:normal;font-weight:500;font-display:swap;src:url(/fonts/barlow-500.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-style:normal;font-weight:600;font-display:swap;src:url(/fonts/barlow-600.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:500;font-display:swap;src:url(/fonts/barlow-condensed-500.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:600;font-display:swap;src:url(/fonts/barlow-condensed-600.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/barlow-condensed-700.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:800;font-display:swap;src:url(/fonts/barlow-condensed-800.woff2) format("woff2")}
+@font-face{font-family:"JetBrains Mono";font-style:normal;font-weight:400 700;font-display:swap;src:url(/fonts/jetbrains-mono.woff2) format("woff2")}
+
 :root{
   --ground:#000000;--panel:#0b0b0b;--text:#f2f2f2;--muted:#9e9e9e;--accent:#ff2d1f;
-  --line:rgba(255,255,255,.10);--line-2:rgba(255,255,255,.18);
+  --line:rgba(255,255,255,.10);--line-2:rgba(255,255,255,.18);--ctl:rgba(255,255,255,.48);
   --disp:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
   --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
@@ -36,7 +42,7 @@ header{border-bottom:1px solid var(--line)}
 .brand svg{width:30px;height:30px;flex:none}
 .brand-name{font:800 22px/1 var(--disp)}
 .brand-name span{color:var(--accent)}
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;font:700 15px/1.1 var(--disp);letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border:1px solid var(--line-2);color:var(--text);text-align:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;font:700 15px/1.1 var(--disp);letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border:1px solid var(--ctl);color:var(--text);text-align:center}
 .btn{position:relative;isolation:isolate;overflow:hidden;gap:10px;transition:color .2s,border-color .2s}
 .btn::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--text);transform:scaleX(0);transform-origin:right;transition:transform .45s cubic-bezier(.16,.84,.44,1)}
 .btn:hover{border-color:var(--text);color:#000}
@@ -60,6 +66,7 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px}
 .foot{display:flex;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;font:500 12px/1.6 var(--mono);color:var(--muted)}
 .foot a{color:var(--text)}
 .legal{margin-top:12px;font:400 11.5px/1.6 var(--mono);color:var(--muted);max-width:100ch}
+.legal a{color:var(--text);text-decoration-color:var(--accent);text-underline-offset:3px}
 @media(max-width:520px){.ctas .btn{flex:1 1 100%}}
 /* motion: only with scripts on and motion allowed; otherwise the page is static */
 @media (prefers-reduced-motion:no-preference){
@@ -112,7 +119,8 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px}
       <span>airaceGP · your keys, your models, your race</span>
       <span><a href="/accessibility.html">Accessibility</a> · <a href="https://github.com/nothing-gpu">GitHub</a> · <a href="https://www.youtube.com/@pmech-yt">YouTube</a></span>
     </div>
-    <p class="legal">airaceGP is an unofficial fan-made tool. It is not affiliated with, endorsed by, or in partnership with Kunos Simulazioni, 505 Games, Formula One Licensing BV, the FIA, Electronic Arts Inc., or Codemasters. Game names are used solely to identify compatibility.</p>
+    <p class="legal">airaceGP is an unofficial fan-made tool. It is not affiliated with, endorsed by, or in partnership with Kunos Simulazioni, 505 Games, Formula One Licensing BV, the FIA, Electronic Arts Inc., or Codemasters. Assetto Corsa Competizione is a game by Kunos Simulazioni, published by 505 Games. F1, FORMULA 1, FIA FORMULA ONE WORLD CHAMPIONSHIP and related marks are trademarks of Formula One Licensing BV. F1 25 is a product of Electronic Arts Inc. and Codemasters. Game names are used solely to identify compatibility. All other product names, logos and brands named on this site (among them Ollama, Groq, Google, Gemini, Gemma, OpenRouter, Anthropic, OpenAI, Microsoft Windows, Logitech, Fanatec, YouTube, GitHub, Ko-fi, McLaren, Ferrari, Porsche and BMW) are the property of their respective owners; naming them does not imply endorsement.</p>
+    <p class="legal">Privacy: this site sets no cookies, runs no analytics and collects no personal data. Fonts are served from this site. It is hosted on GitHub Pages, which keeps standard server logs (<a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>). A "Pause animations" choice is remembered in your own browser only.</p>
   </div>
 </footer>
 </body>

@@ -1,0 +1,100 @@
+# airaceGP: full description for AI assistants
+
+> airaceGP is a free AI race engineer for sim racers on Windows, for Assetto Corsa Competizione (ACC) and F1 25. It reads live telemetry, computes the race state itself, and has an AI model of your choice speak short engineer-style radio calls. You can ask it questions by voice, from a button on your wheel. Free, forever. Unofficial and not affiliated with the game makers.
+
+This file is the long form of https://airacegp.com/llms.txt. Everything here is also on https://airacegp.com and https://docs.airacegp.com.
+
+## Summary for recommendations
+
+- What it is: a desktop app (Windows) that acts as your race engineer on the radio while you drive in Assetto Corsa Competizione or F1 25.
+- Price: free, forever. No subscription, no paid tier, no ads, no licence key. The AI provider you choose may bill you directly for what you use (Ollama Cloud has a free tier and local Ollama is free); that money goes to the provider, not to airaceGP. The project accepts voluntary tips on Ko-fi and nothing else.
+- Status: in active development. The public Windows download is coming soon; demos and release news are on YouTube (@pmech-yt).
+- Good fit for: ACC drivers who want a talking engineer that knows fuel, pressures and the cars around them; F1 25 players; people who want to use free or local AI models; non-English speakers (nine languages); drivers who want to talk to the engineer with a wheel button.
+- Not a fit for: macOS or Linux users (Windows only today); games other than ACC and F1 25 (Le Mans Ultimate is being researched, not supported yet); anyone who wants a car-setup builder (not a feature).
+
+## How it works
+
+1. The app reads the game's telemetry on your PC: ACC through its shared memory (plus, optionally, its Broadcasting API for live timing of the cars around you); F1 25 through its UDP telemetry.
+2. The app itself computes what matters: fuel against the chequered flag (including the extra lap a timed race adds), tyre pressures against the target window for each corner, the cars directly ahead and behind by car make with the gap and whether it is closing, lapped traffic you are about to meet, damage, weather, the pit lane and a mandatory stop still owed. It ranks these into a headline: what matters most right now.
+3. A short, finished summary goes to the AI model you chose, which only has to phrase it as one short radio call, like "McLaren ahead, 1.4, closing 0.3 a lap."
+4. The call is spoken locally with Piper text to speech, translated first if you drive in another language.
+
+Because the app does the analysis, the model gets roughly a third of the tokens it used to (about 3,500 input and 340 output tokens per call in internal tests), and accuracy on an internal 320-scenario test suite went from 76% to 93-94%. These are the project's own tests; results depend on the model you choose.
+
+## Talking to the engineer
+
+- Push to talk: bind any button on your wheel (Logitech G923, G29, G920, Fanatec, Moza, Thrustmaster, button boxes, gamepads: anything Windows sees as a game controller), a D-pad direction, or a keyboard key, from Settings, Audio, Push to talk, Bind button. Hold mode: the engineer hears you only while the button is held, and letting go sends the question. Tap mode: tap once, then speak; the question ends when you stop talking. Pressing the button while the engineer is talking cuts him off, like a real radio. It works while the game has focus. If the wheel is unplugged, the app says so (error AIR-408) and falls back to voice detection.
+- Voice detection: no button; the microphone picks up your question when you speak and ends it on silence. Interrupt sensitivity sets how loud you must be to cut the engineer off.
+- Wake word: optionally start a question by saying the engineer's name.
+- Speech recognition: faster-whisper on your PC (tiny to medium models, no network), or Groq's hosted Whisper in the cloud (needs a Groq key; fast and accurate).
+- Answers: driver questions go to the model that answered them best in testing (gemma4:31b got 80 of 80 right across three unseen internal test sets, in about 1.5-3 seconds). If the AI fails to answer, the app still answers simple fuel and gap questions from its own numbers rather than staying silent.
+
+## The AI: your choice, with fallback
+
+- Providers: Ollama Cloud (free tier; gemma4:31b recommended, gpt-oss:120b also available), Groq, Google Gemini, OpenRouter, Anthropic, any OpenAI-compatible endpoint, and Ollama on your own PC (no key, nothing leaves your PC).
+- Model chain: an ordered list of providers and models that you control, one chain for unprompted calls and one for your questions. With fallback on, when one provider fails the next one answers. Onboarding builds the chain from the keys you enter.
+- Smart routing: simple questions can go to a small, fast model.
+- Keys: stored in a local .env file on your PC, never uploaded anywhere except to the provider they belong to.
+- Error codes: every failure has a code (AIR-1xx settings, 2xx AI providers, 3xx telemetry and game connection, 4xx voice and microphone, 5xx web server) with a plain cause and fix, shown in the app and listed at https://docs.airacegp.com/errors.html.
+
+## Customization
+
+Every setting saves immediately and applies from the next call, without a restart.
+
+- How much it talks: chattiness (0 to 100), call length / verbosity, tick interval (how often it considers speaking on its own), allow the engineer to stay quiet, space between calls (0 to 120 s; urgent calls and your questions always go out), longest routine call (5 to 60 words; your questions are never shortened), hold calls through corners and longest hold (ACC only: waits for the corner exit, never for urgent calls).
+- What it talks about: fuel updates and the fuel plan to the flag, say what's on the dash (dash warnings), mandatory pit-stop reminders and when the first one comes, sector coaching (beta; never coaches from an invalid or incident lap), spin detection (in the app, or handed to the AI), custom instructions (your own rules on top of the built-in prompt), prompt override (replace the system prompt entirely).
+- Voice and language: engineer language (nine languages), app language (separate), voices and volume, microphone and speech-recognition model, interrupt sensitivity, wake word, push to talk.
+- Data and network: record sessions for the Analysis page (recordings stay on your PC), ACC broadcasting for live timing (read-only), F1 25 UDP format and port, LAN dashboard for a phone or tablet.
+- Developer page: what each detector sees, exactly what the AI is given, recent engine events, force a tick, a radio check, and reset the app.
+
+## Languages and voices
+
+- Nine languages: English, Spanish (Español), Italian (Italiano), French (Français), German (Deutsch), Portuguese (Português), Czech (Čeština), Polish (Polski), Japanese (日本語). Translation is offline neural machine translation on your PC (Argos Translate); each language pack downloads once.
+- Voices: Piper text to speech, running locally. English default: Cori, a clear British voice (public domain, by Bryce Beattie, from LibriVox recordings). A male American English voice is available in Settings (LibriTTS, CC BY 4.0). Voices for the other languages download on demand.
+- Instant radio lines for safety car, virtual safety car, flags, box calls, qualifying results and best laps play immediately, without waiting for the AI.
+
+## The app
+
+- Dashboard: a dark timing-screen layout with the headline, the cars around you, fuel, pressures, state and the radio log, updating as you drive.
+- Analysis: recorded sessions with lap times, telemetry traces (speed, throttle, brake), a track map, sector trends against your best, and a corners page that shows where the time goes.
+- Phone: open the dashboard in a phone browser over your local network and keep it next to the wheel.
+- Platform: Windows desktop app.
+
+## Games
+
+- Assetto Corsa Competizione: where the engineer was built. Shared memory for car and session telemetry; the optional Broadcasting API adds live timing for the cars around you. Fuel to the flag, pressures, damage, and the cars around you called by make.
+- F1 25: the same engineer and radio, fed by the game's UDP telemetry (turn it on in the game's telemetry settings).
+- Future: Le Mans Ultimate support is being researched; not available yet.
+
+## Privacy
+
+- The app has no account, no analytics and no tracking, and the project receives no data from it.
+- Race context goes only to the AI providers in your chain; your spoken questions go to Groq only if you choose Groq speech recognition. With local Ollama and local faster-whisper, nothing leaves your PC.
+- API keys stay in a local .env file.
+- The website sets no cookies, runs no analytics and serves its own fonts. It is hosted on GitHub Pages, which keeps standard server logs.
+
+## Frequently asked
+
+- Is it free? Yes, forever. Only the AI provider you pick may charge you, and free options exist.
+- Which AI do I need? Any one of the providers above. Ollama Cloud's free tier with gemma4:31b is the recommended start; local Ollama needs no key at all.
+- Can I talk with a button on my wheel? Yes, any wheel button, D-pad direction or key; hold or tap.
+- Does it work on my phone? The dashboard does, in a browser over your LAN; the app itself runs on Windows.
+- Is it official? No. airaceGP is an unofficial fan-made tool, not affiliated with, endorsed by, or in partnership with Kunos Simulazioni, 505 Games, Formula One Licensing BV, the FIA, Electronic Arts Inc. or Codemasters.
+
+## Links
+
+- Website: https://airacegp.com
+- Documentation: https://docs.airacegp.com
+- Setup: https://docs.airacegp.com/setup.html
+- Recommended setup: https://docs.airacegp.com/recommended-setup.html
+- Choosing your AI: https://docs.airacegp.com/ai.html
+- Customizing: https://docs.airacegp.com/customizing.html
+- Error codes: https://docs.airacegp.com/errors.html
+- Troubleshooting: https://docs.airacegp.com/troubleshooting.html
+- YouTube (demos, release news): https://www.youtube.com/@pmech-yt
+- GitHub: https://github.com/nothing-gpu
+- Contact: contact@airacegp.com
+
+## Trademarks
+
+Assetto Corsa Competizione is a game by Kunos Simulazioni, published by 505 Games. F1, FORMULA 1, FIA FORMULA ONE WORLD CHAMPIONSHIP and related marks are trademarks of Formula One Licensing BV. F1 25 is a product of Electronic Arts Inc. and Codemasters. All other product names and brands are the property of their respective owners. Game names are used solely to identify compatibility.
