@@ -149,7 +149,8 @@ FEATURES = ['Assetto Corsa Competizione', 'F1 25', 'push to talk', 'wheel', 'voi
             'nine languages', 'offline', 'model chain', 'fallback', 'Ollama', 'Groq', 'Gemini', 'OpenRouter',
             'Anthropic', 'OpenAI-compatible', 'error code', 'fuel', 'pressure', 'gap', 'lapped', 'damage',
             'weather', 'pit', 'live timing', 'analysis', 'corner', 'phone', 'chattiness', 'call length',
-            'custom instructions', 'Piper', 'male', 'free', 'Ko-fi', 'Windows', 'faster-whisper', 'privacy']
+            'custom instructions', 'Piper', 'male', 'free', 'Ko-fi', 'Windows', 'faster-whisper', 'privacy',
+            'quiet', 'drink', 'SimHub']
 for name, txt in (('llms.txt', llms), ('llms-full.txt', full)):
     miss = [f for f in FEATURES if f.lower() not in txt.lower()]
     check(f'6b {name} covers every feature', not miss, f'missing {miss}')
