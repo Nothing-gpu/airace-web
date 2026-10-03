@@ -7,6 +7,7 @@
 <meta name="description" content="An AI race engineer for Assetto Corsa Competizione, with F1 25 support. It reads live telemetry, works out fuel, tyres, gaps and damage, and talks to you over the radio. Your choice of AI, keys kept on your PC." />
 <meta name="theme-color" content="#000000" />
 <link rel="canonical" href="https://airacegp.com/" />
+<link rel="alternate" type="text/markdown" href="/llms.txt" title="airaceGP for AI assistants (llms.txt)" />
 
 <!-- Favicon: hosted files so Google & browsers can crawl them -->
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -45,12 +46,18 @@
 }
 </script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" /></noscript>
+<noscript></noscript>
 
 <style>
+@font-face{font-family:"Barlow";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/barlow-400.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/barlow-500.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/barlow-600.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/barlow-condensed-500.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/barlow-condensed-600.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/barlow-condensed-700.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:800;font-display:swap;src:url(fonts/barlow-condensed-800.woff2) format("woff2")}
+@font-face{font-family:"JetBrains Mono";font-style:normal;font-weight:400 700;font-display:swap;src:url(fonts/jetbrains-mono.woff2) format("woff2")}
+
 :root{
   --ground:#000000;
   --panel:#0b0b0b;
@@ -60,7 +67,7 @@
   --accent:#ff2d1f;
   --accent-hi:#ff5347;
   --line:rgba(255,255,255,.10);
-  --line-2:rgba(255,255,255,.18);
+  --line-2:rgba(255,255,255,.18);--ctl:rgba(255,255,255,.48);
   --disp:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
   --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
@@ -106,7 +113,7 @@ section{position:relative}
 /* ---------- buttons ---------- */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 22px;
   font:700 15px/1.1 var(--disp);letter-spacing:.14em;text-transform:uppercase;text-decoration:none;text-align:center;
-  border:1px solid var(--line-2);color:var(--text);background:transparent;cursor:pointer;
+  border:1px solid var(--ctl);color:var(--text);background:transparent;cursor:pointer;
   transition:background .2s var(--ease),color .2s var(--ease),border-color .2s var(--ease)}
 .btn{position:relative;isolation:isolate;overflow:hidden}
 .btn::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--text);transform:scaleX(0);transform-origin:right;transition:transform .45s var(--ease)}
@@ -136,7 +143,7 @@ section{position:relative}
 .nav-links a:hover::after{transform:scaleX(1)}
 .nav-cta{flex:none}
 .nav-cta .btn{min-height:40px;padding:0 16px;font-size:14px}
-.motion-btn{flex:none;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;background:none;border:1px solid var(--line-2);color:var(--text);cursor:pointer;transition:border-color .2s var(--ease)}
+.motion-btn{flex:none;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;background:none;border:1px solid var(--ctl);color:var(--text);cursor:pointer;transition:border-color .2s var(--ease)}
 .motion-btn[hidden]{display:none}
 .motion-btn svg{width:14px;height:14px;display:block}
 .motion-btn .i-play,.motion-btn[aria-pressed="true"] .i-pause{display:none}
@@ -144,7 +151,7 @@ section{position:relative}
 .motion-btn[aria-pressed="true"]{border-color:var(--accent)}
 .motion-btn:hover{border-color:var(--text)}
 @media (prefers-reduced-motion:reduce){.motion-btn{display:none!important}}
-.menu-btn{display:none;margin-left:auto;min-height:44px;min-width:44px;padding:0 14px;background:none;border:1px solid var(--line-2);color:var(--text);font:700 14px var(--disp);letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
+.menu-btn{display:none;margin-left:auto;min-height:44px;min-width:44px;padding:0 14px;background:none;border:1px solid var(--ctl);color:var(--text);font:700 14px var(--disp);letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
 @media (max-width:980px){
   .menu-btn{display:inline-flex;align-items:center}
   .nav-cta{display:none}
@@ -423,6 +430,7 @@ section{position:relative}
 .foot-grid ul{list-style:none}
 .foot-grid ul a{display:inline-block;padding:7px 0;text-decoration:none;color:var(--text);font-size:15px}
 .foot-grid ul a:hover{color:var(--accent)}
+.credits summary h2{display:inline;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;margin:0}
 .legal{margin-top:20px;font:400 12px/1.65 var(--mono);color:var(--muted);max-width:110ch}
 
 /* ---------- responsive ---------- */
@@ -801,7 +809,7 @@ section{position:relative}
       </article>
       <article class="page">
         <h3>Analysis</h3>
-        <p>Racing line, lap times, telemetry traces and sector trends against your best.</p>
+        <p>Track map, lap times, telemetry traces and sector trends against your best.</p>
         <div class="fig" aria-hidden="true">
           <svg viewBox="0 0 320 200" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <path d="M40 150 C20 120 30 70 70 60 L150 40 C190 30 230 36 250 60 C270 84 300 96 290 130 C282 158 240 160 210 150 L120 150 C100 150 90 170 70 170 C55 170 48 162 40 150Z" stroke="#262626" stroke-width="16"/>
@@ -893,9 +901,9 @@ section{position:relative}
       <li lang="ja"><b>JA</b><span>日本語</span></li>
     </ul>
     <div class="voice-grid reveal stagger">
-      <div><h3>Push to talk, or just talk</h3><p>Hold a button, or let voice detection pick up your question.</p></div>
+      <div><h3>Push to talk, or just talk</h3><p>Bind a button on your wheel (G923, G29, Fanatec, any wheel or button box Windows sees), a D-pad direction or a key. Hold it to talk, or tap it once. Or let voice detection pick up your question.</p></div>
       <div><h3>Speech recognition</h3><p>faster-whisper on your PC, or Groq Whisper in the cloud.</p></div>
-      <div><h3>Piper voice</h3><p>Text to speech runs locally with Piper.</p></div>
+      <div><h3>Piper voice</h3><p>Text to speech runs locally with Piper. A clear British voice by default, a male American voice one click away.</p></div>
     </div>
   </div>
 </section>
@@ -932,7 +940,7 @@ section{position:relative}
     <div class="faq reveal">
       <details>
         <summary>What does it cost?</summary>
-        <div class="ans"><p>No app subscription. The AI is your choice: Ollama Cloud has a free tier, local Ollama needs no key, and paid providers bill you directly for what you use.</p></div>
+        <div class="ans"><p>Nothing. airaceGP is free, forever: no subscription, no paid tier, no ads. The AI is your choice: Ollama Cloud has a free tier, local Ollama needs no key, and paid providers bill you directly for what you use. That money goes to them, not to us. If you want to support the project, voluntary tips on Ko-fi are the only way.</p></div>
       </details>
       <details>
         <summary>Which AI do I need?</summary>
@@ -959,6 +967,14 @@ section{position:relative}
         <div class="ans"><p>In our internal tests, accuracy on a 320-scenario suite went from 76% to 93–94% once the app started doing the analysis itself. Results depend on the model you choose.</p></div>
       </details>
       <details>
+        <summary>Can I talk with a button on my wheel?</summary>
+        <div class="ans"><p>Yes. In Settings, Audio, Push to talk, press Bind button and then the button you want: any wheel button (Logitech G923, G29, G920, Fanatec, Moza, button boxes), a D-pad direction, or a key. Hold it while you talk, or tap it once and speak. Pressing it while the engineer talks cuts him off, like a real radio. It works while the game has focus.</p></div>
+      </details>
+      <details>
+        <summary>What does it collect about me?</summary>
+        <div class="ans"><p>Nothing. The app has no account, no analytics and no tracking, and we receive no data from it. Race context goes only to the AI providers you put in your chain, and your spoken questions to Groq only if you pick Groq for speech recognition. This website sets no cookies either.</p></div>
+      </details>
+      <details>
         <summary>Is it official?</summary>
         <div class="ans"><p>No. airaceGP is an unofficial fan-made tool, not affiliated with the makers of either game.</p></div>
       </details>
@@ -967,16 +983,17 @@ section{position:relative}
 </section>
 
 <!-- =============== CREDITS =============== -->
-<section class="sec sec-slim" id="follow" aria-label="Credits">
+<section class="sec sec-slim" id="follow" aria-labelledby="credits-h">
   <div class="wrap">
     <details class="credits" id="credits">
-      <summary>Credits · standing on other people's work</summary>
+      <summary><h2 id="credits-h">Credits · standing on other people's work</h2></summary>
       <p class="intro">airaceGP is a small project built on a lot of open work. These are some of the people whose code, voices, translations and track maps make it possible. Full credits and notices are kept with the app.</p>
       <div class="credit-grid">
-        <div><h3>Voice</h3><p>Piper by Michael Hansen and the Rhasspy project, and piper-plus by ayutaz. Voice datasets by Thorsten Mueller (German), Carlos Fonseca (Spanish), czyzi0 (Polish), the Nabu Casa voice-datasets team (Portuguese, Czech), the SIWIS project (French).</p></div>
+        <div><h3>Voice</h3><p>Piper by Michael Hansen and the Rhasspy project, and piper-plus by ayutaz. The default English voice, Cori, by Bryce Beattie from public-domain LibriVox recordings; the male English voice trained on the LibriTTS corpus (Zen et al., CC BY 4.0). Voice datasets by Thorsten Mueller (German), Carlos Fonseca (Spanish), czyzi0 (Polish), the Nabu Casa voice-datasets team (Portuguese, Czech), the SIWIS project (French).</p></div>
+        <div><h3>This site</h3><p>Barlow and Barlow Condensed by Jeremy Tribby and the Barlow Project Authors, JetBrains Mono by JetBrains, all SIL Open Font License 1.1, served from this site.</p></div>
         <div><h3>Speech recognition</h3><p>Vosk by Alpha Cephei for the wake word. faster-whisper by SYSTRAN, riding on CTranslate2 by OpenNMT and SYSTRAN, with weights from OpenAI's Whisper. All MIT or Apache 2.0.</p></div>
         <div><h3>Translation</h3><p>Argos Translate by Argos Open Technologies, with models trained on the OPUS parallel corpus collection curated by Joerg Tiedemann and the Helsinki-NLP group.</p></div>
-        <div><h3>Track outlines</h3><p>Traced from Wikimedia Commons maps by Will Pittenger, GabrielStella, HumanBodyPiloter5, Rumbin, Firkin, AlexJ, Ocdp, Sas1998, Dh16dh, Nasho3498, cBuckley, and ごひょううぺこ. CC0, CC BY 3.0, CC BY-SA 3.0 / 4.0.</p></div>
+        <div><h3>Track outlines</h3><p>Traced from Wikimedia Commons maps by Will Pittenger, GabrielStella, HumanBodyPiloter5, Rumbin, Firkin, AlexJ, Ocdp, Sas1998, Dh16dh, Nasho3498, cBuckley, and <span lang="ja">ごひょううぺこ</span>. CC0, CC BY 3.0, CC BY-SA 3.0 / 4.0.</p></div>
         <div><h3>Dashboard</h3><p>Instrument Sans by the Instrument Sans Project Authors, Titillium Web by the Accademia di Belle Arti di Urbino, both SIL Open Font License 1.1. pywebview by Roman Sirokov, python-sounddevice by Matthias Geier, PortAudio by Ross Bencina and Phil Burk, NumPy contributors, ONNX Runtime by Microsoft.</p></div>
         <div><h3>Models</h3><p>Gemma by Google DeepMind is the default model, served through Ollama, OpenRouter or Groq, each under its own terms. None of them is affiliated with airaceGP.</p></div>
         <div><h3>Telemetry spec</h3><p>ACC shared-memory documentation and Broadcasting SDK by Kunos Simulazioni. The F1 integration uses the EA/Codemasters UDP specification and packet layouts referenced from hotlaps.io (MIT).</p></div>
@@ -1022,7 +1039,8 @@ section{position:relative}
         </ul>
       </div>
     </div>
-    <p class="legal">airaceGP is an unofficial fan-made tool. It is not affiliated with, endorsed by, or in partnership with Kunos Simulazioni, 505 Games, Formula One Licensing BV, the FIA, Electronic Arts Inc., or Codemasters. Assetto Corsa Competizione is a game by Kunos Simulazioni, published by 505 Games. F1, FORMULA 1, FIA FORMULA ONE WORLD CHAMPIONSHIP and related marks are trademarks of Formula One Licensing BV. F1 25 is a product of Electronic Arts Inc. and Codemasters. Game names are used solely to identify compatibility. Car makes on this page appear in example values only.</p>
+    <p class="legal">airaceGP is an unofficial fan-made tool. It is not affiliated with, endorsed by, or in partnership with Kunos Simulazioni, 505 Games, Formula One Licensing BV, the FIA, Electronic Arts Inc., or Codemasters. Assetto Corsa Competizione is a game by Kunos Simulazioni, published by 505 Games. F1, FORMULA 1, FIA FORMULA ONE WORLD CHAMPIONSHIP and related marks are trademarks of Formula One Licensing BV. F1 25 is a product of Electronic Arts Inc. and Codemasters. Game names are used solely to identify compatibility. Car makes on this page appear in example values only. All other product names, logos and brands named on this site (among them Ollama, Groq, Google, Gemini, Gemma, OpenRouter, Anthropic, OpenAI, Microsoft Windows, Logitech, Fanatec, YouTube, GitHub, Ko-fi, McLaren, Ferrari, Porsche and BMW) are the property of their respective owners; naming them does not imply endorsement.</p>
+    <p class="legal">Privacy: this site sets no cookies, runs no analytics and collects no personal data. Fonts are served from this site. It is hosted on GitHub Pages, which keeps standard server logs (<a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>). A "Pause animations" choice is remembered in your own browser only.</p>
   </div>
 </footer>
 

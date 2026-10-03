@@ -876,10 +876,15 @@ def main(only):
                     sp.append(f"statement does not state {what}")
             if ISSUES_URL not in src:
                 sp.append(f"statement does not link {ISSUES_URL}")
-            if "<!-- TODO(owner): add a contact email if desired -->" not in src:
-                sp.append("statement lacks the owner TODO comment for a contact email")
-            if re.search(r"[\w.+-]+@[\w-]+\.[\w.]+", txt) or "mailto:" in src:
-                sp.append("statement contains an email address")
+            # DELIBERATE CHANGE 2026-10-03: this used to demand an owner TODO and
+            # forbid any email, while no contact address existed. The project now
+            # has one (contact@airacegp.com, on its own domain, no personal data),
+            # so the statement must offer it, and only it.
+            mails = set(re.findall(r"[\w.+-]+@[\w-]+\.[\w.]+", txt))
+            if "mailto:contact@airacegp.com" not in src:
+                sp.append("statement does not offer contact@airacegp.com")
+            if mails - {"contact@airacegp.com"}:
+                sp.append(f"statement contains another email address: {sorted(mails)}")
             if re.search(r"ombuds|m[ée]diateur|\bSIP\b|Service information et presse", txt, re.I):
                 sp.append("statement mentions the public-sector referral (SIP / ombudsman)")
         report(f"{STATEMENT}: required content (STMT)", sp)
