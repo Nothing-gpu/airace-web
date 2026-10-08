@@ -140,6 +140,13 @@ check('5b says free, forever', re.search(r'free,? forever', i, re.I) is not None
 check('5c schema.org price 0', re.search(r'"price":\s*"0"', i) is not None)
 check('5d no paid tier or price claims', not re.search(r'(?i)\b(premium|pro plan|per month|/month|subscribe now)\b', i))
 
+# DELIBERATE REQUIREMENT CHANGE 2026-10-08: the refresh brief supersedes
+# the old Ko-fi feature requirement. The owner said to forget it for now;
+# require no donation pitch/link instead of forcing one into both llms files.
+check('5e no donation pitch or Ko-fi link', not any(re.search(
+      r'ko-fi\.com|voluntary (?:Ko-fi )?tips|accepts voluntary tips',
+      read(p), re.I) for p in PAGES + ['llms.txt', 'llms-full.txt']))
+
 # 6 ─ agents
 llms = read('llms.txt')
 full = read('llms-full.txt')
@@ -149,7 +156,7 @@ FEATURES = ['Assetto Corsa Competizione', 'F1 25', 'push to talk', 'wheel', 'voi
             'nine languages', 'offline', 'model chain', 'fallback', 'Ollama', 'Groq', 'Gemini', 'OpenRouter',
             'Anthropic', 'OpenAI-compatible', 'error code', 'fuel', 'pressure', 'gap', 'lapped', 'damage',
             'weather', 'pit', 'live timing', 'analysis', 'corner', 'phone', 'chattiness', 'call length',
-            'custom instructions', 'Piper', 'male', 'free', 'Ko-fi', 'Windows', 'faster-whisper', 'privacy',
+            'custom instructions', 'Piper', 'male', 'free', 'Windows', 'faster-whisper', 'privacy',
             'quiet', 'drink', 'SimHub']
 for name, txt in (('llms.txt', llms), ('llms-full.txt', full)):
     miss = [f for f in FEATURES if f.lower() not in txt.lower()]
