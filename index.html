@@ -307,7 +307,7 @@ section{position:relative}
 .node .ord{font:700 12px var(--mono);color:var(--muted)}
 .node .prov{font:700 28px/1.05 var(--disp);letter-spacing:.02em;text-transform:uppercase;margin:10px 0 6px}
 .node .mdl{font:500 13px var(--mono);color:var(--muted);overflow-wrap:anywhere}
-.node .state{margin-top:14px;display:inline-flex;align-items:center;gap:7px;font:600 12px var(--disp);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.node .state{padding-inline:4px;margin-top:14px;display:inline-flex;align-items:center;gap:7px;font:600 12px var(--disp);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .node .state i{width:6px;height:6px;background:var(--muted)}
 .node.first{box-shadow:inset 0 3px 0 var(--accent)}
 .node.first .state{color:var(--accent)}
@@ -325,7 +325,7 @@ section{position:relative}
 .providers li{border:1px solid var(--line-2);padding:11px 14px;font:700 16px/1 var(--disp);letter-spacing:.1em;text-transform:uppercase;transition:border-color .25s var(--ease),transform .3s var(--ease)}
 .providers li:hover{border-color:var(--accent);transform:translateY(-3px)}
 .providers li small{display:block;font:500 11px var(--mono);letter-spacing:0;text-transform:none;color:var(--muted);margin-top:5px}
-.qa{display:grid;grid-template-columns:auto minmax(0,1fr);gap:24px;align-items:center;margin-top:28px;padding:22px;border:1px solid var(--line);border-left:3px solid var(--accent)}
+.qa{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;align-items:center;margin-top:28px;padding:22px;border:1px solid var(--line);border-left:3px solid var(--accent)}
 .qa .score{font:700 clamp(52px,6vw,72px)/1 var(--disp);color:var(--text)}
 .qa .score span{color:var(--muted);font-size:.5em}
 .qa p{color:var(--muted);font-size:15.5px}
@@ -683,7 +683,7 @@ section{position:relative}
     <p class="radio-q"><span>Driver</span>“Where's the car ahead?”</p>
     <p class="radio-a" data-words>McLaren ahead, <span class="n">1.4</span>, closing <span class="n">0.3</span> a lap.</p>
     <div class="tx"><span class="who"><i aria-hidden="true"></i>Engineer</span><div class="wave" aria-hidden="true" data-wave></div></div>
-    <p class="radio-note">That is the whole call. Car make, the gap, the trend. No pep talk, no guessing. Ask again in two laps and you get the new number.</p>
+    <p class="radio-note">That is the whole call. Car make, the gap, the trend. Example wording, not a guarantee of what an AI model will say. Missing data limits the answer.</p>
   </div>
 </section>
 
@@ -709,36 +709,18 @@ section{position:relative}
       </ol>
     </div>
 
-    <div class="metrics" data-metrics>
-      <div class="metric">
-        <p class="big"><span data-count data-from="76" data-to="93">93–94</span><small>%</small></p>
-        <p class="label">Accuracy · 320 scenarios</p>
-        <p class="from">was 76%</p>
-        <div class="mbars" aria-hidden="true">
-          <div class="mbar"><span>before</span><div class="track"><div class="fill" style="--w:76%"></div></div></div>
-          <div class="mbar now"><span>now</span><div class="track"><div class="fill" style="--w:93.5%"></div></div></div>
-        </div>
-      </div>
-      <div class="metric">
-        <p class="big" data-count data-from="~9,200">~3,500</p>
-        <p class="label">Input tokens per call</p>
-        <p class="from">was ~9,200</p>
-        <div class="mbars" aria-hidden="true">
-          <div class="mbar"><span>before</span><div class="track"><div class="fill" style="--w:100%"></div></div></div>
-          <div class="mbar now"><span>now</span><div class="track"><div class="fill" style="--w:38%"></div></div></div>
-        </div>
-      </div>
-      <div class="metric">
-        <p class="big" data-count data-from="~1,170">~340</p>
-        <p class="label">Output tokens per call</p>
-        <p class="from">was ~1,170</p>
-        <div class="mbars" aria-hidden="true">
-          <div class="mbar"><span>before</span><div class="track"><div class="fill" style="--w:100%"></div></div></div>
-          <div class="mbar now"><span>now</span><div class="track"><div class="fill" style="--w:29%"></div></div></div>
-        </div>
-      </div>
+    <div class="pages reveal stagger" style="margin-top:48px">
+<article class="page"><h3>Remember the last drive</h3>
+<p>Driver memory keeps the last 8 sessions per game, track and car in driver_memory.json on your PC. The file is never uploaded.</p><p>ACC only for now. Remember me between sessions is on by default; turn it off to stop recording and recall, or use Forget everything. Remembered summaries can be sent to your chosen AI provider.</p><p><a href="https://docs.airacegp.com/customizing.html#memory">Driver memory and privacy</a></p>
+</article>
+<article class="page"><h3>Plan the next stop</h3>
+<p>Ask about stops or fuel in an ACC race: the strategy planner works out when to stop, how much to add and whether the fuel reaches the flag, in laps, never litres, with a 1-lap reserve.</p><p>Saving suggestions are bounded. Tyre wear, traffic, undercuts and safety cars are not modelled; ACC pit-window units are still unverified.</p>
+</article>
+<article class="page"><h3>Pressure advice</h3>
+<p>Setup advice compares measured hot tyre pressures with the dry or wet pressure window and gives the change in psi per corner, using recent sessions or the live frame when memory is off.</p>
+<p>This is not a setup builder. Brakes, camber, toe, aero, ride height, dampers, bars and gearing are not measured for setup advice, so it gives no values for them and no target cold pressure.</p>
+</article>
     </div>
-    <p class="caveat">In our internal tests: a 320-scenario suite, scored on what the driver actually hears. Before, the AI read raw telemetry and worked it out itself. Now the app does the analysis and the AI phrases it. Same or better answers for about a third of the tokens. Your results depend on the model you choose.</p>
   </div>
 </section>
 
@@ -776,8 +758,7 @@ section{position:relative}
     <p class="lead reveal">When a provider fails, the app says which problem it was and what to do about it. Every failure has a code and a fix, and the next provider in your chain takes over. <a href="https://docs.airacegp.com/errors">See the error codes</a>.</p>
 
     <div class="qa reveal">
-      <p class="score"><span data-count data-from="0" class="cv">80</span><span>/80</span></p>
-      <p><strong>Driver questions go to the model that answered them best.</strong> gemma4:31b got 80 of 80 right across three unseen test sets, in about 1.5–3 seconds. In our internal tests.</p>
+      <p>If every AI provider fails, a driver-question fallback uses the app's facts or says plainly that there is no answer.</p>
     </div>
   </div>
 </section>
@@ -836,7 +817,7 @@ section{position:relative}
     <div class="settings reveal">
       <div>
         <h3>Tune the engineer.</h3>
-        <p>Talkative or quiet, short calls or longer ones, spaced out or back to back. Every change applies from the next call. <a href="https://docs.airacegp.com/customizing">See every setting</a>.</p>
+        <p>Talkative or quiet, short calls or longer ones, spaced out or back to back. Settings let you control the radio. <a href="https://docs.airacegp.com/customizing">See every setting</a>.</p>
       </div>
       <ul class="set-list">
         <li>Chattiness<span>how often it talks</span></li>
@@ -901,7 +882,7 @@ section{position:relative}
       <li lang="ja"><b>JA</b><span>日本語</span></li>
     </ul>
     <div class="voice-grid reveal stagger">
-      <div><h3>Push to talk, or just talk</h3><p>Bind a button on your wheel (G923, G29, Fanatec, any wheel or button box Windows sees), a D-pad direction or a key. Hold it to talk, or tap it once. Or let voice detection pick up your question.</p></div>
+      <div><h3>Push to talk, or just talk</h3><p>Bind a button on your wheel (a detected controller input), a D-pad direction or a key. Hold it to talk, or tap it once. Or let voice detection pick up your question.</p></div>
       <div><h3>Speech recognition</h3><p>faster-whisper on your PC, or Groq Whisper in the cloud.</p></div>
       <div><h3>Piper voice</h3><p>Text to speech runs locally with Piper. A clear British voice by default, a male American voice one click away.</p></div>
     </div>
@@ -930,6 +911,26 @@ section{position:relative}
   </div>
 </section>
 
+<section class="sec" id="testing" aria-labelledby="testing-title">
+  <div class="wrap">
+    <div class="sec-head reveal"><h2 class="h-sec" id="testing-title">Try it with eyes open.</h2>
+      <p class="lead">These tools make the remaining hardware checks visible. <a href="https://docs.airacegp.com/customizing.html#dev">Developer-page test guide</a>.</p></div>
+    <div class="pages reveal stagger">
+<article class="page"><h3>Spotter beta</h3>
+<p>The Spotter is ACC only, beta and off by default in Settings, AI, Spotter.</p>
+<p>A dedicated fast rivals feed drives car left, car right, three wide and clear calls. A call cuts the engineer off; it can resume afterwards, although a routine line that waits too long is dropped.</p>
+<p>Tested in simulation, not verified on a real PC: opponent updates, left/right in traffic and audio timing. The owner's ACC update-rate test must establish whether the feed is good enough before enabling the Spotter in a race.</p>
+</article>
+<article class="page"><h3>Check your inputs</h3>
+<p>Wheel and buttons lights detected inputs while held, to check whether a button can be bound for push to talk. Hardware compatibility is unverified on a real PC; try your device in this view.</p><p>The Developer page also has the ACC update-rate test, a Spotter live view and a cut-and-resume demo. The game tools and wheel lights still need a real-PC test.</p>
+</article>
+<article class="page"><h3>Le Mans Ultimate</h3>
+<p>Le Mans Ultimate is not supported yet. Its game integration is fixture-only and unverified on a real PC; the recorder exists for testers.</p><p>The LMU recorder lets testers add notes and stop to write a report zip. It is a data-gathering tool, not a working race engineer for LMU.</p>
+</article>
+    </div>
+  </div>
+</section>
+
 <!-- =============== FAQ =============== -->
 <section class="sec" id="faq" aria-labelledby="faq-title">
   <div class="wrap two">
@@ -940,7 +941,7 @@ section{position:relative}
     <div class="faq reveal">
       <details>
         <summary>What does it cost?</summary>
-        <div class="ans"><p>Nothing. airaceGP is free, forever: no subscription, no paid tier, no ads. The AI is your choice: Ollama Cloud has a free tier, local Ollama needs no key, and paid providers bill you directly for what you use. That money goes to them, not to us. If you want to support the project, voluntary tips on Ko-fi are the only way.</p></div>
+        <div class="ans"><p>Nothing. airaceGP is free, forever: no subscription, no paid tier, no ads. The AI is your choice: Ollama Cloud has a free tier, local Ollama needs no key, and paid providers bill you directly for what you use. That money goes to them, not to us.</p></div>
       </details>
       <details>
         <summary>Which AI do I need?</summary>
@@ -964,15 +965,15 @@ section{position:relative}
       </details>
       <details>
         <summary>How good are the answers?</summary>
-        <div class="ans"><p>In our internal tests, accuracy on a 320-scenario suite went from 76% to 93–94% once the app started doing the analysis itself. Results depend on the model you choose.</p></div>
+        <div class="ans"><p>The app computes measured facts before asking the AI to phrase them. Answers can still be wrong. New features have specific limits: driver-memory wording is not live-model verified, and the Spotter is beta and unverified on a real PC.</p></div>
       </details>
       <details>
         <summary>Can I talk with a button on my wheel?</summary>
-        <div class="ans"><p>Yes. In Settings, Audio, Push to talk, press Bind button and then the button you want: any wheel button (Logitech G923, G29, G920, Fanatec, Moza, button boxes), a D-pad direction, or a key. Hold it while you talk, or tap it once and speak. Pressing it while the engineer talks cuts him off, like a real radio. It works while the game has focus.</p></div>
+        <div class="ans"><p>Yes. In Settings, Audio, Push to talk, press Bind button and then the button you want: a detected wheel button, a D-pad direction, or a key. Hold it while you talk, or tap it once and speak. Pressing it while the engineer talks cuts him off, like a real radio. Check your input in the Developer page; hardware compatibility is unverified on a real PC.</p></div>
       </details>
       <details>
         <summary>What does it collect about me?</summary>
-        <div class="ans"><p>Nothing. The app has no account, no analytics and no tracking, and we receive no data from it. Race context goes only to the AI providers you put in your chain, and your spoken questions to Groq only if you pick Groq for speech recognition. This website sets no cookies either.</p></div>
+        <div class="ans"><p>Driver memory saves measured session history on your PC when enabled. The file stays local; a remembered summary can enter your chosen AI requests. The app has no account, no analytics and no tracking. Race context goes only to the AI providers you put in your chain, and your spoken questions to Groq only if you pick Groq for speech recognition. This website sets no cookies either.</p></div>
       </details>
       <details>
         <summary>Is it official?</summary>
@@ -1039,7 +1040,7 @@ section{position:relative}
         </ul>
       </div>
     </div>
-    <p class="legal">airaceGP is an unofficial fan-made tool. It is not affiliated with, endorsed by, or in partnership with Kunos Simulazioni, 505 Games, Formula One Licensing BV, the FIA, Electronic Arts Inc., or Codemasters. Assetto Corsa Competizione is a game by Kunos Simulazioni, published by 505 Games. F1, FORMULA 1, FIA FORMULA ONE WORLD CHAMPIONSHIP and related marks are trademarks of Formula One Licensing BV. F1 25 is a product of Electronic Arts Inc. and Codemasters. Game names are used solely to identify compatibility. Car makes on this page appear in example values only. All other product names, logos and brands named on this site (among them Ollama, Groq, Google, Gemini, Gemma, OpenRouter, Anthropic, OpenAI, Microsoft Windows, Logitech, Fanatec, YouTube, GitHub, Ko-fi, McLaren, Ferrari, Porsche and BMW) are the property of their respective owners; naming them does not imply endorsement.</p>
+    <p class="legal">airaceGP is an unofficial fan-made tool. It is not affiliated with, endorsed by, or in partnership with Kunos Simulazioni, 505 Games, Formula One Licensing BV, the FIA, Electronic Arts Inc., or Codemasters. Assetto Corsa Competizione is a game by Kunos Simulazioni, published by 505 Games. F1, FORMULA 1, FIA FORMULA ONE WORLD CHAMPIONSHIP and related marks are trademarks of Formula One Licensing BV. F1 25 is a product of Electronic Arts Inc. and Codemasters. Game names are used solely to identify compatibility. Car makes on this page appear in example values only. All other product names, logos and brands named on this site (among them Ollama, Groq, Google, Gemini, Gemma, OpenRouter, Anthropic, OpenAI, Microsoft Windows, Logitech, Fanatec, YouTube, GitHub, McLaren, Ferrari, Porsche and BMW) are the property of their respective owners; naming them does not imply endorsement.</p>
     <p class="legal">Privacy: this site sets no cookies, runs no analytics and collects no personal data. Fonts are served from this site. It is hosted on GitHub Pages, which keeps standard server logs (<a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>). A "Pause animations" choice is remembered in your own browser only.</p>
   </div>
 </footer>

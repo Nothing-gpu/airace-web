@@ -64,6 +64,22 @@ def main():
                 ('invent Markdown setting', site / 'llms-full.txt', '## Customization', '[setting: invented_mode]\n\n## Customization', 'setting:'),
                 ('wrong visible default', site / 'llms-full.txt', '[setting: driver_memory] Default: on.', '[setting: driver_memory] Default: off.', 'default:'),
             ]
+        # These probes exercise guards that can already pass on old content.
+        cases += [
+            ('fabricate source excerpt', site / 'CLAIMS.md', 'keeps the last 8 sessions per game + track + car', 'keeps an imaginary unlimited history', 'source:'),
+            ('insert universal wheel claim', site / 'index.html', '</main>', '<p>Works with every wheel.</p></main>', 'policy:'),
+            ('insert split benchmark score', site / 'index.html', '</main>', '<p><span>80</span><span>/80</span></p></main>', 'policy:'),
+            ('insert performance pitch', site / 'index.html', '</main>', '<p>80 of 80 answers right.</p></main>', 'policy:'),
+            ('insert donation pitch', site / 'index.html', '</main>', '<p>Support with voluntary Ko-fi tips.</p></main>', 'policy:'),
+        ]
+        if (site / 'llms.txt').exists():
+            for feature in ('Driver memory', 'Strategy planner', 'Setup advice', 'Spotter', 'Developer tools'):
+                line = next(line for line in (site / 'llms.txt').read_text().splitlines() if line.startswith('- [' + feature + ']'))
+                cases.append(('comment out short ' + feature, site / 'llms.txt', line, '<!-- ' + line + ' -->', 'short:'))
+        for ident in ('model-default', 'f1-questions'):
+            line = next(line for line in (site / 'CLAIMS.md').read_text().splitlines()
+                        if line.startswith('| ' + ident + ' |'))
+            cases.append(('remove required row ' + ident, site / 'CLAIMS.md', line, '', 'manifest:'))
         failed = 0
         for name, path, old, new, reason in cases:
             original = path.read_text()

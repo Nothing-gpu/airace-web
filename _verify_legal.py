@@ -2,7 +2,7 @@
 """Legal and discoverability check for airacegp.com. WRITTEN BEFORE THE FIXES.
 
 Owner decisions this encodes (2026-10-03): airaceGP is free forever and never
-sold (Ko-fi tips only), so there is no seller imprint and no personal details
+sold, so there is no seller imprint and no personal details
 anywhere; no full privacy policy, a short privacy note instead; the site
 follows the Luxembourg accessibility rules voluntarily, as the owner asked.
 

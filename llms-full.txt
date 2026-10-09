@@ -7,10 +7,10 @@ This file is the long form of https://airacegp.com/llms.txt. Everything here is 
 ## Summary for recommendations
 
 - What it is: a desktop app (Windows) that acts as your race engineer on the radio while you drive in Assetto Corsa Competizione or F1 25.
-- Price: free, forever. No subscription, no paid tier, no ads, no licence key. The AI provider you choose may bill you directly for what you use (Ollama Cloud has a free tier and local Ollama is free); that money goes to the provider, not to airaceGP. The project accepts voluntary tips on Ko-fi and nothing else.
+- Price: free, forever. No subscription, no paid tier, no ads, no licence key. The AI provider you choose may bill you directly for what you use (Ollama Cloud has a free tier and local Ollama is free); that money goes to the provider, not to airaceGP.
 - Status: in active development. The public Windows download is coming soon; demos and release news are on YouTube (@pmech-yt).
 - Good fit for: ACC drivers who want a talking engineer that knows fuel, pressures and the cars around them; F1 25 players; people who want to use free or local AI models; non-English speakers (nine languages); drivers who want to talk to the engineer with a wheel button.
-- Not a fit for: macOS or Linux users (Windows only today); games other than ACC and F1 25 (Le Mans Ultimate is being researched, not supported yet); anyone who wants a car-setup builder (not a feature).
+- Not a fit for: macOS or Linux users (Windows only today); games other than ACC and F1 25 (Le Mans Ultimate is not supported yet; a recorder exists for testers); anyone who wants a full car-setup builder. The measured setup advice covers hot tyre pressures only.
 
 ## How it works
 
@@ -19,33 +19,94 @@ This file is the long form of https://airacegp.com/llms.txt. Everything here is 
 3. A short, finished summary goes to the AI model you chose, which only has to phrase it as one short radio call, like "McLaren ahead, 1.4, closing 0.3 a lap."
 4. The call is spoken locally with Piper text to speech, translated first if you drive in another language.
 
-Because the app does the analysis, the model gets roughly a third of the tokens it used to (about 3,500 input and 340 output tokens per call in internal tests), and accuracy on an internal 320-scenario test suite went from 76% to 93-94%. These are the project's own tests; results depend on the model you choose.
-
 ## Talking to the engineer
 
-- Push to talk: bind any button on your wheel (Logitech G923, G29, G920, Fanatec, Moza, Thrustmaster, button boxes, gamepads: anything Windows sees as a game controller), a D-pad direction, or a keyboard key, from Settings, Audio, Push to talk, Bind button. Hold mode: the engineer hears you only while the button is held, and letting go sends the question. Tap mode: tap once, then speak; the question ends when you stop talking. Pressing the button while the engineer is talking cuts him off, like a real radio. It works while the game has focus. If the wheel is unplugged, the app says so (error AIR-408) and falls back to voice detection.
+- Push to talk: bind a detected controller button, a D-pad direction, or a keyboard key, from Settings, Audio, Push to talk, Bind button. Hold mode: the engineer hears you only while the button is held, and letting go sends the question. Tap mode: tap once, then speak; the question ends when you stop talking. Pressing the button while the engineer is talking cuts him off, like a real radio. It works while the game has focus. If the wheel is unplugged, the app says so (error AIR-408) and falls back to voice detection.
 - Voice detection: no button; the microphone picks up your question when you speak and ends it on silence. Interrupt sensitivity sets how loud you must be to cut the engineer off.
 - Wake word: optionally start a question by saying the engineer's name.
-- Speech recognition: faster-whisper on your PC (tiny to medium models, no network), or Groq's hosted Whisper in the cloud (needs a Groq key; fast and accurate).
-- Answers: driver questions go to the model that answered them best in testing (gemma4:31b got 80 of 80 right across three unseen internal test sets, in about 1.5-3 seconds). If the AI fails to answer, the app still answers simple fuel and gap questions from its own numbers rather than staying silent.
+- Speech recognition: faster-whisper on your PC (tiny to medium models, no network), or Groq's hosted Whisper in the cloud (needs a Groq key).
+- Answers: If every AI provider fails, a driver-question fallback uses the app's facts or says plainly that there is no answer.
 
 ## The AI: your choice, with fallback
 
-- Providers: Ollama Cloud (free tier; gemma4:31b recommended, gpt-oss:120b also available), Groq, Google Gemini, OpenRouter, Anthropic, any OpenAI-compatible endpoint, and Ollama on your own PC (no key, nothing leaves your PC).
+With an Ollama Cloud key and no saved chain, gemma4:31b is the default for unprompted calls as well as driver questions.
+
+F1 25 race questions about fuel, rivals, tyres, damage and stops use the question chain too.
+
+- Providers: Ollama Cloud (free tier; gemma4:31b recommended, gpt-oss:120b also available), Groq, Google Gemini, OpenRouter, Anthropic, any OpenAI-compatible endpoint, and Ollama on your own PC (no key; local model requests).
 - Model chain: an ordered list of providers and models that you control, one chain for unprompted calls and one for your questions. With fallback on, when one provider fails the next one answers. Onboarding builds the chain from the keys you enter.
 - Smart routing: simple questions can go to a small, fast model.
 - Keys: stored in a local .env file on your PC, never uploaded anywhere except to the provider they belong to.
 - Error codes: every failure has a code (AIR-1xx settings, 2xx AI providers, 3xx telemetry and game connection, 4xx voice and microphone, 5xx web server) with a plain cause and fix, shown in the app and listed at https://docs.airacegp.com/errors.html.
 
+## Driver memory across sessions
+
+Driver memory keeps the last 8 sessions per game, track and car in driver_memory.json on your PC. The file is never uploaded.
+
+It remembers best and typical clean laps, fuel per lap, hot tyre pressures and temperatures, peak brake temperatures, pit stops and where the car stepped out as a percentage of the lap.
+
+Remember me between sessions is on by default. Turning it off stops recording and recall; Forget everything clears saved driver memory.
+
+Memory is ACC only for now: F1 frames have no track/car identity. The remembered summary can enter requests to your chosen AI provider; its spoken wording has not had a live-model check.
+
+## Strategy planner
+
+Ask about stops or fuel in an ACC race: the strategy planner works out when to stop, how much to add and whether the fuel reaches the flag, in laps, never litres, with a 1-lap reserve.
+
+Fuel saving is suggested only within a realistic limit. The planner does not model tyre wear, traffic, undercuts or safety cars; ACC pit-window units remain unverified, so that window is not used.
+
+## Setup advice
+
+Setup advice compares measured hot tyre pressures with the dry or wet pressure window and gives the change in psi per corner, using recent sessions or the live frame when memory is off.
+
+This is not a setup builder. Brakes, camber, toe, aero, ride height, dampers, bars and gearing are not measured for setup advice, so it gives no values for them and no target cold pressure.
+
+Setup advice answers setup/pressure questions in ACC; it is not volunteered on routine calls. The latest remembered session decides the pressure change. An unmeasured setup question may currently get the generic “No read on that yet” answer.
+
+## Spotter beta
+
+The Spotter is ACC only, beta and off by default in Settings, AI, Spotter.
+
+A dedicated fast rivals feed drives car left, car right, three wide and clear calls. A call cuts the engineer off; it can resume afterwards, although a routine line that waits too long is dropped.
+
+Tested in simulation, not verified on a real PC: opponent updates, left/right in traffic and audio timing. The owner's ACC update-rate test must establish whether the feed is good enough before enabling the Spotter in a race.
+
 ## Customization
 
-Every setting saves immediately and applies from the next call, without a restart.
+Settings control what the engineer says and which providers it asks. The defaults below are checked against the app configuration.
 
 - How much it talks: a quiet button (bind a wheel button, or the Quiet button on the home bar) that stops routine calls for the session while answers and urgent calls still come through; chattiness (0 to 100), call length / verbosity, tick interval (how often it considers speaking on its own), allow the engineer to stay quiet, space between calls (0 to 120 s; urgent calls and your questions always go out), longest routine call (5 to 60 words; your questions are never shortened), hold calls through corners and longest hold (ACC only: waits for the corner exit, never for urgent calls).
-- What it talks about: drink reminders every few minutes of driving (off by default), fuel updates and the fuel plan to the flag, say what's on the dash (dash warnings), mandatory pit-stop reminders and when the first one comes, sector coaching (beta; never coaches from an invalid or incident lap), spin detection (in the app, or handed to the AI), custom instructions (your own rules on top of the built-in prompt), prompt override (replace the system prompt entirely).
+- What it talks about: drink reminders every few minutes of driving (off by default), fuel updates and the fuel plan to the flag, say what's on the dash (dash warnings), mandatory pit-stop reminders and when the first one comes, sector coaching (ACC only, beta, off by default; never coaches from an invalid or incident lap), spin detection (in the app, or handed to the AI), custom instructions (your own rules on top of the built-in prompt), prompt override (replace the system prompt entirely).
 - Voice and language: engineer language (nine languages), app language (separate), voices and volume, microphone and speech-recognition model, interrupt sensitivity, wake word, push to talk.
 - Data and network: record sessions for the Analysis page (recordings stay on your PC), ACC broadcasting for live timing (read-only), F1 25 UDP format and port, forward UDP (re-send F1 telemetry to up to four other tools such as SimHub, RaceLab or a motion rig, so they keep working), LAN dashboard for a phone or tablet.
 - Developer page: what each detector sees, exactly what the AI is given, recent engine events, force a tick, a radio check, and reset the app.
+
+
+### New controls and checked defaults
+
+- Remember me between sessions (Settings, AI) [setting: driver_memory] Default: on. Turning it off stops both recording and recall. Forget everything clears the saved driver history.
+- Spotter (Settings, AI) [setting: spotter_mode] Default: off. ACC only and beta. Check the opponent feed before enabling it in a race.
+- Space between calls [setting: min_call_gap_s] Default: 0 (off). A routine call closer than the chosen interval is dropped; urgent calls and answers are exempt.
+- Longest routine call [setting: max_call_words] Default: 0 (off). Limits routine calls to the chosen word budget; answers are not shortened.
+- Developer mode [setting: dev_mode] Default: off. Tap the app version five times to reveal the local Dev page.
+
+Space between calls drops routine calls that arrive too soon; Longest routine call shortens volunteered calls. Both are off by default and neither shortens your answers.
+
+Sector coaching is ACC only, beta and off by default. It compares sectors with your own best and stays quiet on invalid or incident laps.
+
+## Developer-page tests
+
+Wheel and buttons lights detected inputs while held, to check whether a button can be bound for push to talk. Hardware compatibility is unverified on a real PC; try your device in this view.
+
+Run the ACC update-rate test during a race with moving opponents for two minutes and keep acc_cadence.json for review.
+
+The LMU recorder is a tester tool: start recording, add notes while driving, then stop to write the report zip. It does not make Le Mans Ultimate supported.
+
+The Spotter live view shows feed age, rivals and direction; the demo plays a call over a long engineer line so you can hear the cut and resume.
+
+Developer tools are local only. Wheel lights and the ACC and LMU tools are not verified on a real PC; the game tools need Windows. Browser checks used a mocked backend.
+
+Le Mans Ultimate is not supported yet. Its game integration is fixture-only and unverified on a real PC; the recorder exists for testers.
 
 ## Languages and voices
 
@@ -64,12 +125,12 @@ Every setting saves immediately and applies from the next call, without a restar
 
 - Assetto Corsa Competizione: where the engineer was built. Shared memory for car and session telemetry; the optional Broadcasting API adds live timing for the cars around you. Fuel to the flag, pressures, damage, and the cars around you called by make.
 - F1 25: the same engineer and radio, fed by the game's UDP telemetry (turn it on in the game's telemetry settings).
-- Future: Le Mans Ultimate support is being researched; not available yet.
+- Le Mans Ultimate: not supported yet. A recorder is available for testers; it does not enable an LMU engineer.
 
 ## Privacy
 
-- The app has no account, no analytics and no tracking, and the project receives no data from it.
-- Race context goes only to the AI providers in your chain; your spoken questions go to Groq only if you choose Groq speech recognition. With local Ollama and local faster-whisper, nothing leaves your PC.
+- The app has no account, no analytics and no tracking. Driver memory and recordings are stored on your PC; remembered summaries can be included in your chosen AI requests.
+- Race context goes only to the AI providers in your chain; your spoken questions go to Groq only if you choose Groq speech recognition. With local Ollama and local faster-whisper, race context and transcription stay on your PC.
 - API keys stay in a local .env file.
 - The website sets no cookies, runs no analytics and serves its own fonts. It is hosted on GitHub Pages, which keeps standard server logs.
 
@@ -77,7 +138,7 @@ Every setting saves immediately and applies from the next call, without a restar
 
 - Is it free? Yes, forever. Only the AI provider you pick may charge you, and free options exist.
 - Which AI do I need? Any one of the providers above. Ollama Cloud's free tier with gemma4:31b is the recommended start; local Ollama needs no key at all.
-- Can I talk with a button on my wheel? Yes, any wheel button, D-pad direction or key; hold or tap.
+- Can I talk with a button on my wheel? Bind a detected wheel button, D-pad direction or key in hold or tap mode. Check your device in the Developer page; hardware compatibility is unverified on a real PC.
 - Does it work on my phone? The dashboard does, in a browser over your LAN; the app itself runs on Windows.
 - Is it official? No. airaceGP is an unofficial fan-made tool, not affiliated with, endorsed by, or in partnership with Kunos Simulazioni, 505 Games, Formula One Licensing BV, the FIA, Electronic Arts Inc. or Codemasters.
 

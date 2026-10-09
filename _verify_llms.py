@@ -29,7 +29,7 @@ WEB = Path(os.environ.get('AIRACE_WEB', ROOT if (ROOT / 'llms-full.txt').exists(
 REQUIRED = {'memory', 'memory-data', 'memory-controls', 'memory-limits', 'strategy',
             'strategy-limits', 'setup', 'setup-limits', 'spotter', 'spotter-audio',
             'spotter-limits', 'dev-wheel', 'dev-cadence', 'dev-lmu', 'dev-spotter',
-            'dev-limits', 'lmu', 'radio', 'fallback', 'coaching'}
+            'dev-limits', 'lmu', 'radio', 'fallback', 'coaching', 'model-default', 'f1-questions'}
 SETTING_SECTIONS = {'talking', 'topics', 'voice', 'brain', 'data'}
 
 class Node:
@@ -118,9 +118,13 @@ def verify():
                 txt = re.sub(r'<!--.*?-->', '', txt, flags=re.S)
             require(bool(wording) and norm(wording) in norm(txt), 'claim', ident + ': ' + target)
     if (ROOT / 'llms.txt').exists():
-        short = (ROOT / 'llms.txt').read_text().lower()
-        for feature in ('driver memory', 'strategy planner', 'setup advice', 'spotter', 'developer', 'not supported yet'):
-            require(feature in short, 'short', 'llms.txt: ' + feature)
+        # Tightened after a real survivor: commented-out short entries counted.
+        # Link destinations must not stand in for visible feature descriptions.
+        short = re.sub(r'<!--.*?-->', '', (ROOT / 'llms.txt').read_text(), flags=re.S)
+        short = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', short).lower()
+        for feature in ('driver memory', 'strategy planner', 'setup advice', 'spotter', 'developer tools'):
+            require(re.search(r'^- ' + re.escape(feature) + ':', short, re.M), 'short', 'llms.txt: ' + feature)
+        require('not supported yet' in short, 'short', 'llms.txt: LMU boundary')
     defaults = config_defaults()
     seen = set()
     default_seen = set()
@@ -161,7 +165,7 @@ def verify():
         # race gaps/lap times are also allowed; benchmark and latency pitches are not.
         banned = [r'\breal[ -]time\b', r'\b(?:any|every|all) wheel(?:s| button)?\b',
                   r'\b(?:80 of 80|93[–-]94|3,500|1\.5[–-]3 seconds|third of the tokens)\b',
-                  r'ko-fi\.com', r'voluntary tips on Ko-fi', r'accepts voluntary tips']
+                  r'\b80\s*/\s*80\b', r'ko-fi\.com', r'voluntary (?:Ko-fi )?tips', r'accepts voluntary tips']
         for pattern in banned:
             require(not re.search(pattern, txt, re.I), 'policy', path.name + ': ' + pattern)
     for key in ('driver_memory', 'spotter_mode', 'min_call_gap_s', 'max_call_words', 'dev_mode'):
