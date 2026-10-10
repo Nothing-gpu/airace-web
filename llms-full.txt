@@ -69,7 +69,7 @@ The Spotter is ACC only, beta and off by default in Settings, AI, Spotter.
 
 A dedicated fast rivals feed drives car left, car right, three wide and clear calls. A call cuts the engineer off; it can resume afterwards, although a routine line that waits too long is dropped.
 
-Tested in simulation, not verified on a real PC: opponent updates, left/right in traffic and audio timing. The owner's ACC update-rate test must establish whether the feed is good enough before enabling the Spotter in a race.
+Tested in simulation, not verified on a real PC: opponent updates, left/right in traffic and audio timing. Run the ACC update-rate test first, and do not enable the Spotter in a race until it shows the feed is good enough.
 
 ## Customization
 

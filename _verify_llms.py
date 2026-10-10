@@ -165,7 +165,10 @@ def verify():
         # race gaps/lap times are also allowed; benchmark and latency pitches are not.
         banned = [r'\breal[ -]time\b', r'\b(?:any|every|all) wheel(?:s| button)?\b',
                   r'\b(?:80 of 80|93[–-]94|3,500|1\.5[–-]3 seconds|third of the tokens)\b',
-                  r'\b80\s*/\s*80\b', r'ko-fi\.com', r'voluntary (?:Ko-fi )?tips', r'accepts voluntary tips']
+                  r'\b80\s*/\s*80\b', r'ko-fi\.com', r'voluntary (?:Ko-fi )?tips', r'accepts voluntary tips',
+                  # ADDED 2026-10-09 by the audit: "the owner's cadence test" is the project's own vocabulary (it came from the
+                  # brief). A reader of the public site has no owner; the copy tells THEM what to run.
+                  r"\bowner['\u2019]s\b"]
         for pattern in banned:
             require(not re.search(pattern, txt, re.I), 'policy', path.name + ': ' + pattern)
     for key in ('driver_memory', 'spotter_mode', 'min_call_gap_s', 'max_call_words', 'dev_mode'):

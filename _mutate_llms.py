@@ -71,6 +71,7 @@ def main():
             ('insert split benchmark score', site / 'index.html', '</main>', '<p><span>80</span><span>/80</span></p></main>', 'policy:'),
             ('insert performance pitch', site / 'index.html', '</main>', '<p>80 of 80 answers right.</p></main>', 'policy:'),
             ('insert donation pitch', site / 'index.html', '</main>', '<p>Support with voluntary Ko-fi tips.</p></main>', 'policy:'),
+            ('insert owner vocabulary', site / 'index.html', '</main>', "<p>The owner's test decides.</p></main>", 'policy:'),
         ]
         if (site / 'llms.txt').exists():
             for feature in ('Driver memory', 'Strategy planner', 'Setup advice', 'Spotter', 'Developer tools'):

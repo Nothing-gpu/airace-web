@@ -146,6 +146,10 @@ check('5d no paid tier or price claims', not re.search(r'(?i)\b(premium|pro plan
 check('5e no donation pitch or Ko-fi link', not any(re.search(
       r'ko-fi\.com|voluntary (?:Ko-fi )?tips|accepts voluntary tips',
       read(p), re.I) for p in PAGES + ['llms.txt', 'llms-full.txt']))
+# ADDED 2026-10-09 by the audit: the first refresh removed the pitch but left the NAME in two trademark footers
+# (accessibility.html, 404.html), so the footers disagreed with index.html and named a service the site no longer mentions.
+check('5f the name Ko-fi appears nowhere on the site (the owner said to forget it for now)', not any(re.search(
+      r'ko-?fi', read(p), re.I) for p in PAGES + ['llms.txt', 'llms-full.txt']))
 
 # 6 ─ agents
 llms = read('llms.txt')
