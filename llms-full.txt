@@ -96,7 +96,7 @@ Sector coaching is ACC only, beta and off by default. It compares sectors with y
 
 ## Developer-page tests
 
-Wheel and buttons lights detected inputs while held, to check whether a button can be bound for push to talk. Hardware compatibility is unverified on a real PC; try your device in this view.
+The Wheel and buttons card shows one light per detected button, D-pad direction and held key, lit while it is held, to check whether a button can be bound for push to talk. Hardware compatibility is unverified on a real PC; try your device in this view.
 
 Run the ACC update-rate test during a race with moving opponents for two minutes and keep acc_cadence.json for review.
 
