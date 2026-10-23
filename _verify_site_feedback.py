@@ -37,6 +37,15 @@ Checks, per page (index.html, 404.html, og-image.html where it applies):
   H. No JS (javaScriptEnabled: false): the same visibility rule as G.
   I. No console errors or page errors while loading with motion on, and after
      scrolling to the bottom.
+  J. A consumer page, not a test report (owner, 2026-10-23, verbatim: "can you
+     just remove this section? TRY IT WITH EYES OPEN ... It's supposed to be a
+     consumer site where you tell me what is not done"). index.html has no
+     #testing section, no heading about "eyes open", none of that section's three
+     cards (h3 "Spotter beta", "Check your inputs", "Le Mans Ultimate") and no link
+     to the Developer-page test guide (customizing.html#dev). Checked in the
+     rendered page and in the source (so a commented-out copy fails too: remove
+     means remove). It does NOT forbid the same facts elsewhere, such as the FAQ,
+     docs.airacegp.com or llms-full.txt: the owner asked about this section only.
 
 Files starting with "_" are not published by GitHub Pages (Jekyll skips them).
 
@@ -170,6 +179,15 @@ STATIC_PROBE = r"""
     const need = (fs >= 24 || (bold && fs >= 18.66)) ? 3 : 4.5;
     if (r < need - 0.01) out.push(`F: contrast ${r.toFixed(2)} < ${need} (${cs.color} on bg) ${V.name(e)}`);
   }
+
+  // J. a consumer page: no tester section ("Try it with eyes open")
+  if (document.getElementById('testing')) out.push('J: the #testing section is on the page');
+  for (const h of document.querySelectorAll('h1, h2, h3, h4')) {
+    const t = (h.textContent || '').trim().replace(/\s+/g, ' ');
+    if (/eyes open/i.test(t)) out.push(`J: heading "${t}" is on the page`);
+    if (/^(Spotter beta|Check your inputs|Le Mans Ultimate)$/i.test(t)) out.push(`J: tester card "${t}" is on the page`);
+  }
+  for (const a of document.querySelectorAll('a[href*="customizing.html#dev"]')) out.push(`J: link to the Developer-page test guide (${a.getAttribute('href')})`);
   return out;
 }
 """
@@ -222,6 +240,19 @@ def static_file_checks():
     return out
 
 
+def tester_section_checks():
+    """J, in the source: a commented-out or hidden copy of the section fails as well."""
+    out = []
+    txt = (ROOT / "index.html").read_text(encoding="utf-8")
+    for pat, what in ((r'id\s*=\s*["\']testing["\']', 'an element with id="testing"'),
+                      (r'eyes\s+open', 'the words "eyes open"'),
+                      (r'customizing\.html#dev', 'a link to the Developer-page test guide'),
+                      (r'<h3[^>]*>\s*(Spotter beta|Check your inputs|Le Mans Ultimate)\s*</h3>', 'one of the section\'s three card headings')):
+        if re.search(pat, txt, re.I):
+            out.append(f"J: index.html still has {what}")
+    return out
+
+
 class QuietHandler(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a):
         pass
@@ -254,6 +285,7 @@ async def main():
             print(f"   ... and {len(problems) - 30} more")
 
     report("static files: no old red", static_file_checks())
+    report("static files: no tester section on the consumer page (J)", tester_section_checks())
 
     async with async_playwright() as p:
         kw = {"args": ["--ignore-certificate-errors"]}
@@ -274,7 +306,7 @@ async def main():
                     bg = await pg.evaluate("getComputedStyle(document.body).backgroundColor")
                     if bg != "rgb(0, 0, 0)":
                         probs.append(f"A: og-image body background {bg}")
-                report(f"{name} @ {w}px requirements (A-F)", probs)
+                report(f"{name} @ {w}px requirements (A-F, J)", probs)
                 if name != "og-image.html":
                     report(f"{name} @ {w}px reduced motion: all content visible (G)", await pg.evaluate(VISIBILITY_PROBE))
                 await ctx.close()
