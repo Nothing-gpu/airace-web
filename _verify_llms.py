@@ -26,10 +26,14 @@ import sys
 ROOT = Path(__file__).resolve().parent
 APP = Path(os.environ.get('AIRACE_APP', ROOT.parent / 'airarce-ui' / 'airacee' / 'airacee'))
 WEB = Path(os.environ.get('AIRACE_WEB', ROOT if (ROOT / 'llms-full.txt').exists() else ROOT.parent / 'airace-web'))
-REQUIRED = {'memory', 'memory-data', 'memory-controls', 'memory-limits', 'strategy',
-            'strategy-limits', 'setup', 'setup-limits', 'spotter', 'spotter-audio',
-            'spotter-limits', 'dev-wheel', 'dev-cadence', 'dev-lmu', 'dev-spotter',
-            'dev-limits', 'lmu', 'radio', 'fallback', 'coaching', 'model-default', 'f1-questions'}
+# CHANGED 2026-10-23 on the owner's instruction ("consumer site that doesn't say what is not done", "no dev developing notes on
+# consumer website"): the claims that only stated limits, verification gaps or tester tools are gone from the contract
+# (setup-limits, spotter-limits, dev-wheel, dev-cadence, dev-lmu, dev-spotter, dev-limits, lmu). memory-limits and strategy-limits
+# keep only their positive halves, as memory-privacy (where the memory summary goes) and strategy-saving. Not to fit the pages:
+# the owner decided what the pages may say, and `no_dev_notes` below keeps the removed wording from coming back.
+REQUIRED = {'memory', 'memory-data', 'memory-controls', 'memory-privacy', 'strategy',
+            'strategy-saving', 'setup', 'spotter', 'spotter-audio',
+            'radio', 'fallback', 'coaching', 'model-default', 'f1-questions'}
 SETTING_SECTIONS = {'talking', 'topics', 'voice', 'brain', 'data'}
 
 class Node:
@@ -122,9 +126,8 @@ def verify():
         # Link destinations must not stand in for visible feature descriptions.
         short = re.sub(r'<!--.*?-->', '', (ROOT / 'llms.txt').read_text(), flags=re.S)
         short = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', short).lower()
-        for feature in ('driver memory', 'strategy planner', 'setup advice', 'spotter', 'developer tools'):
+        for feature in ('driver memory', 'strategy planner', 'setup advice', 'spotter'):
             require(re.search(r'^- ' + re.escape(feature) + ':', short, re.M), 'short', 'llms.txt: ' + feature)
-        require('not supported yet' in short, 'short', 'llms.txt: LMU boundary')
     defaults = config_defaults()
     seen = set()
     default_seen = set()
@@ -169,9 +172,22 @@ def verify():
                   # ADDED 2026-10-09 by the audit: "the owner's cadence test" is the project's own vocabulary (it came from the
                   # brief). A reader of the public site has no owner; the copy tells THEM what to run.
                   r"\bowner['\u2019]s\b"]
-        for pattern in banned:
+        # ADDED 2026-10-23 on the owner's instruction (verbatim: "consumer site that doesn't say what is not done" and
+        # "no dev developing notes on consumer website"). The public pages and the llms files describe what the app does. What is
+        # unfinished, unverified, beta, unsupported or only for testers goes to the owner in reports and into AGENTS.md, never
+        # onto these pages. "Coming soon" for the download is the one status the pages keep (it is how a visitor learns there is no
+        # download yet). errors.html mirrors the app's own error messages word for word (_verify_docs.py enforces it), and
+        # accessibility.html is a compliance declaration with its own required wording, so both are exempt.
+        no_dev_notes = [r'\bunverified\b', r'\bnot (?:yet )?verified\b', r'verified on a real', r'live[- ]model', r'has not been tried',
+                        r'tested in simulation', r'\bin simulation\b', r'\bfixtures?(?:-only)?\b', r'\bbeta\b',
+                        r'not supported yet', r'in active development', r'\bfor now\b', r'\bnot yet\b', r'\bonly today\b',
+                        r'\btesters?\b', r'\brecorder\b', r'developer[- ](?:page|mode|tools?|tests?)', r'update-rate', r'\blive view\b',
+                        r'cut-and-resume', r'\bmocked\b', r'wheel lights', r'not modell?ed', r'does not model', r'not a setup builder',
+                        r'not measured for', r'no read on that yet', r'Le Mans Ultimate', r'\bLMU\b']
+        exempt = {'errors.html', 'accessibility.html'}
+        for pattern in banned + ([] if path.name in exempt else no_dev_notes):
             require(not re.search(pattern, txt, re.I), 'policy', path.name + ': ' + pattern)
-    for key in ('driver_memory', 'spotter_mode', 'min_call_gap_s', 'max_call_words', 'dev_mode'):
+    for key in ('driver_memory', 'spotter_mode', 'min_call_gap_s', 'max_call_words'):
         require(key in seen, 'setting', 'undocumented key ' + key)
         require(key in default_seen, 'default', 'undocumented default ' + key)
     return failures
